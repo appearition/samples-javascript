@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WeAR Demo: Authentication</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div id="popup">
+      <p id="popup-text"></p>
+      <button id="close-popup">Close</button>
+    </div>
+    <div class="container" id="login-form">
+      <h2>Login</h2>
+      <form>
+        <label for="email">Email:</label>
+        <input
+          type="text"
+          id="email-login"
+          name="email"
+          placeholder="Enter your email"
+        />
+
+        <label for="password">Password:</label>
+        <input
+          type="password"
+          id="password-login"
+          name="password"
+          placeholder="Enter your password"
+        />
+
+        <button type="submit">Login</button>
+      </form>
+
+      <!-- <div class="signup-link">
+        Don't have an account?
+        <a href="#" onclick="showSignUpForm()">Sign up</a>
+      </div> -->
+    </div>
+
+    <div class="container" id="signup-form" style="display: none">
+      <h2>Sign up</h2>
+      <form onsubmit="">
+        <label for="firstname">Name:</label>
+        <input
+          type="text"
+          id="name-signup"
+          name="firstname"
+          placeholder="Enter your name"
+        />
+        <label for="email">Email:</label>
+        <input
+          type="text"
+          id="email-signup"
+          name="email"
+          placeholder="Enter your email"
+        />
+
+        <label for="password">Password:</label>
+        <input
+          type="password"
+          id="password-signup"
+          name="password"
+          placeholder="Enter your password"
+        />
+
+        <label for="confirm-password">Confirm Password:</label>
+        <input
+          type="password"
+          id="confirm-password"
+          name="confirm-password"
+          placeholder="Confirm your password"
+        />
+
+        <button type="submit">Sign up</button>
+      </form>
+
+      <div class="signup-link">
+        Already have an account?
+        <a href="#" onclick="hideSignUpForm()">Login</a>
+      </div>
+    </div>
+    <script src="./script.js"></script>
+  </body>
+</html>
