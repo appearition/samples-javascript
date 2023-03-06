@@ -1,0 +1,3 @@
+[submodule "AR-Module-Samples"]
+	path = AR-Module-Samples
+	url = https://github.com/appearition/AR-Module-Samples.git
