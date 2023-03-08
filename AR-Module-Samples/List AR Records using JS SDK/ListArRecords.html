@@ -1,0 +1,192 @@
+<html>
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <style>
+        .error {
+            color: #ff0000;
+        }
+        .target-image {
+            width: 100px;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+	<h1>List AR Experiences</h1>
+
+    <p>This sample project will connect to the Appearition Platform and download records from the AR Target Image and Media module. </p>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">AR Experiences</div>
+        <div class="panel-body" id="arExperiences">None Loaded</div>
+        <div class="panel-footer">
+            <button id="btnLoadExperiences" class="btn btn-primary" disabled onclick="javascript: loadArExperiences();">Get records</button>
+        </div>
+    </div>
+
+    <br />
+
+    <div class="panel panel-default">
+        <div class="panel-heading">Messages</div>
+        <div class="panel-body" id="messages">Starting</div>
+    </div>
+
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="https://s3-ap-southeast-2.amazonaws.com/cdn.appearition.com/sdk/js/core/v1.0.0/appearition.min.js"></script>
+<script src="https://s3-ap-southeast-2.amazonaws.com/cdn.appearition.com/sdk/js/modules/authentication/v1.0.0/appearition.authentication.min.js"></script>
+<script src="https://s3-ap-southeast-2.amazonaws.com/cdn.appearition.com/sdk/js/modules/arTargetImageAndMedia/v1.0.0/appearition.arTargetImageAndMedia.min.js"></script>
+
+<script type="text/javascript">
+
+    var apiUrl = '';        // Your API URL;
+    var apiToken = '';      // Your API Token;
+    var myChannelId = 0;    // Your channel ID;
+
+    $(document).ready(function () {
+
+        PrintMessage("Verifying session to Appearition platform...");
+        Appearition.Authentication.VerifySession(apiUrl, apiToken, myChannelId)
+                    .then(
+                        () =>{
+                            PrintMessage("Session has been verified");
+                            $("#btnLoadExperiences").removeAttr("disabled")
+                        },
+                        (error) =>{
+                            handleResponseErrors("Session cannot be verified");
+                            handleResponseErrors(error);
+                        }
+                    );
+        
+    });
+
+
+    function loadArExperiences() {
+        $('#arExperiences').html('Loading...');
+
+        Appearition.ArTargetImageAndMedia.List(
+            JSON.stringify({
+                Page: 0,
+                RecordsPerPage: 10,
+                IncludeTargetImages: true,
+                IncludeMedia: true
+            }),
+            {
+                channelId: myChannelId,
+                beforeSend: function (request) {
+                    PrintMessage("Calling ArTarget/List API...");
+                },
+                complete: function () {
+                    PrintMessage("Call to ArTarget/List API completed");
+                },
+                success: function (data) {
+                    loadArTargets(data.ArTargets);
+                },
+                error: function (errorArr, xhr) {                    
+                    handleResponseErrors(errorArr, xhr);
+                    $('#arExperiences').innerHTML = 'Loading failed';
+                }
+            }
+        );
+    }
+
+    function loadArTargets(arTargets) {
+        var htmlSnip = "<table class='table'><tr><th>Name</th><th>Asset Id (AR Target Key)</th><th>Target Images</th><th>Media</th></tr>";
+        for (var i = 0; i < arTargets.length; i++) {
+            htmlSnip += showArTarget(arTargets[i]);
+        }
+        htmlSnip += "</table>";
+        $('#arExperiences').html(htmlSnip);
+
+        loadTargetImages(arTargets);
+    }
+
+    function showArTarget(arTarget) {
+        var html = "<tr>"
+            + "<td>" + arTarget.name + "</td>"
+            + "<td>" + arTarget.assetId + "</td>"
+
+        // Render Target Images
+        html += "<td>";
+        for (var i = 0; i < arTarget.targetImages.length; i++) {
+            var targetImage = arTarget.targetImages[i];
+            html += "<img class='target-image' id='" + targetImage.arImageId + "' alt='loading...'/>";
+        }
+        if (arTarget.targetImages.length == 0) {
+            html += "None";
+        }
+        html += "</td>";
+
+        // Render Media
+        html += "<td>";
+        for (var i = 0; i < arTarget.mediaFiles.length; i++) {
+            var media = arTarget.mediaFiles[i];
+            html += "Media Type: " + media.mediaType + "<br/>" + "<a target='blank' href='" + media.url + "'>View</a>";
+        }
+        if (arTarget.mediaFiles.length == 0) {
+            html += "No Media Available";
+        }
+        html += "</td></tr>";
+
+        return html;
+    }
+
+    function loadTargetImages(arTargets){
+        for (var i = 0; i < arTargets.length; i++) {
+            for (var x = 0; x < arTargets[i].targetImages.length; x++) {
+                getTargetImage(arTargets[i].targetImages[x])
+            }            
+        }
+    }
+
+    function getTargetImage(targetImage) {
+        Appearition.ArTargetImageAndMedia.DownloadTargetImageAsDataUrl(
+            targetImage.arImageId,
+            {
+                success: function (data) {
+                    $("#" + targetImage.arImageId).attr("src",  data);
+                },
+                error: function (error, xhr) {
+                    handleResponseErrors(error, xhr);
+                }
+            });
+    }
+
+    function handleResponseErrors(error, xhr) {
+
+        var msg = "<span class='error'>";
+
+        if (error != null) {
+            if(Array.isArray(error)) {
+                error.foreach(function (e) {
+                    msg += e + "; ";
+                });
+            }
+            else{
+                msg += error;
+            }
+        }
+
+        console.log(xhr);
+        if (xhr != null) {
+            msg = msg + "Status Code: " + xhr.status 
+            if(xhr.responseText)
+            {
+                msg += ", ResponseText: " + xhr.responseText + "; ";                
+            }
+        }
+
+        msg += "</span>"
+
+        PrintMessage(msg);
+    }
+
+    function PrintMessage(msg) {
+        $('#messages').append("<br/>");
+        $('#messages').append(msg);
+    }
+
+</script>
+
+</html>
