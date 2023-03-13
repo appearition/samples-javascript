@@ -252,6 +252,6 @@ For now, you can add this code which will handle any errors returned from the ca
     }
 ```
 
-# Complete sample
+# Live Demo
 
-<a target="_blank" href="http://docs.appearition.com/tutorials/developer/web/ar-experiences/sample.html">Click here</a> to view and download the complete sample project.
+<a target="_blank" href="http://docs.appearition.com/tutorials/developer/web/ar-experiences/samples/listArRecords.html">Click here</a> to see a live demo of this sample.
