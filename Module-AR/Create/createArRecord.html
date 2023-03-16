@@ -1,0 +1,177 @@
+
+<html>
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <style>
+        .error {
+            color: #ff0000;
+        }
+        .target-image {
+            width: 100px;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+	<h1>Create AR Experience</h1>
+
+    <p>
+        This sample project will connect to the Appearition Platform and create a record on the AR Target Image and Media module. You can then
+        retrieve the created experience from this sample <a href="../List Records/">List AR Records</a>
+    </p>
+
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label class="col-sm-4 col-sm-4 control-label" for="txtName">Name</label>
+            <div class="col-sm-8">
+                <input id="txtName" type="text" class="form-control" disabled placeholder="enter name here...">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-4 col-sm-4 control-label" for="txtShortDescription">Short Description (500 chars)</label>
+            <div class="col-sm-8">
+                <textarea id="txtShortDescription" type="text" class="form-control" disabled placeholder="enter short description here..." maxlength="500" rows="2"></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-4 col-sm-4 control-label" for="txtLongDescription">Long Description</label>
+            <div class="col-sm-8">
+                <textarea id="txtLongDescription" type="text" class="form-control" disabled placeholder="enter long description here..." rows="5"></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-push-4 col-sm-8">
+                <a id="btnCreateExperience" class="btn btn-primary" disabled onclick="javascript: createArTarget();">Create now</a>
+            </div>
+        </div>
+    </form>
+
+    <br />
+
+    <div class="panel panel-default">
+        <div class="panel-heading">Messages</div>
+        <div class="panel-body" id="messages">Starting</div>
+    </div>
+
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="https://s3-ap-southeast-2.amazonaws.com/cdn.appearition.com/sdk/js/core/v1.0.0/appearition.min.js"></script>
+<script src="https://s3-ap-southeast-2.amazonaws.com/cdn.appearition.com/sdk/js/modules/authentication/v1.0.0/appearition.authentication.min.js"></script>
+<script src="https://s3-ap-southeast-2.amazonaws.com/cdn.appearition.com/sdk/js/modules/arTargetImageAndMedia/v1.0.0/appearition.arTargetImageAndMedia.min.js"></script>
+
+<script type="text/javascript">
+
+    // Appareation Platform Account Details
+    var apiUrl = '';        // Your API URL;
+    var apiToken = '';      // Your API Token;
+    var myChannelId = 0;    // Your channel ID;
+
+    // Element Variables
+    var txtName;
+    var txtShortDescription;
+    var txtLongDescription;
+    var btnCreateExperience;
+
+    $(document).ready(function () {
+
+        if(apiUrl == '' || apiToken == ''){
+            printError("You have not supplied an API Url and/or API Token. <a href='http://docs.appearition.com/start/developer/register/' target='_blank'>learn more</a>");
+            return;
+        }
+
+        txtName  = $("#txtName");
+        txtShortDescription = $("#txtShortDescription");
+        txtLongDescription = $("#txtLongDescription");
+        btnCreateExperience = $("#btnCreateExperience");
+
+        printMessage("Verifying session to Appearition platform...");        
+        Appearition.Authentication.VerifySession(apiUrl, apiToken, myChannelId)
+                    .then(
+                        () =>{
+                            printMessage("Session has been verified");
+                            txtName.removeAttr("disabled");
+                            txtShortDescription.removeAttr("disabled");
+                            txtLongDescription.removeAttr("disabled");
+                            btnCreateExperience.removeAttr("disabled");
+                        },
+                        (error) =>{
+                            handleResponseErrors("Session cannot be verified");
+                            handleResponseErrors(error);
+                        }
+                    );
+        
+    });
+
+    function createArTarget() {
+
+        if (txtName.val() == null || txtName.val().length == 0) {
+            printError("Please name your experience");
+            return;
+        }
+
+        var createRequest = {
+            productId: myChannelId,
+            name: txtName.val(),
+            shortDescription: txtShortDescription.val(),
+            longDescription: txtLongDescription.val()
+        };
+
+        var postData = JSON.stringify(createRequest);
+
+        Appearition.ArTargetImageAndMedia.Create(
+            postData,
+            {
+                beforeSend: function () {
+                    printMessage('Creating now...');
+                },
+                success: function (data) {
+                    printMessage("AR record was created");
+                },
+                error: function (errors) {
+                    handleResponseErrors(errors);
+                }
+            });
+    }
+
+    function printError(error) {
+        handleResponseErrors(error, null);
+    }
+
+    function handleResponseErrors(error, xhr) {
+
+        var msg = "<span class='error'>";
+
+        if (error != null) {
+            if(Array.isArray(error)) {
+                error.foreach(function (e) {
+                    msg += e + "; ";
+                });
+            }
+            else{
+                msg += error;
+            }
+        }
+
+        console.log(xhr);
+        if (xhr != null) {
+            msg = msg + "Status Code: " + xhr.status 
+            if(xhr.responseText)
+            {
+                msg += ", ResponseText: " + xhr.responseText + "; ";                
+            }
+        }
+
+        msg += "</span>"
+
+        printMessage(msg);
+    }
+
+    function printMessage(msg) {
+        $('#messages').append("<br/>");
+        $('#messages').append(msg);
+    }
+
+</script>
+
+</html>
