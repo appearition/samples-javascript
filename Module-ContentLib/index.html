@@ -11,7 +11,7 @@
       }
       .container {
         width: 80%;
-        height: 30vh;
+        height: 25vh;
         margin: 0 auto;
         padding: 50px;
         background-color: #fff;
@@ -25,9 +25,6 @@
       h1 {
         text-align: center;
         margin-bottom: 30px;
-      }
-      .form-group {
-        margin-bottom: 20px;
       }
       label {
         display: block;
@@ -46,13 +43,13 @@
       }
       button[type='submit'] {
         display: block;
-        margin-top: 20px;
+        margin-top: 10px;
         padding: 10px 20px;
         background-color: #4caf50;
         color: #fff;
         border: none;
         border-radius: 5px;
-        font-size: 18px;
+        font-size: 10px;
         cursor: pointer;
       }
     </style>
@@ -73,23 +70,12 @@
         <button type="submit" id="upload-button">Upload</button>
       </form>
     </div>
-    <div class="container" style="margin-top: 1em">
-      <button
-        id="retrive-button"
-        type="submit"
-        style="align-self: flex-start; margin-top: -3rem"
-      >
-        Retrieve
-      </button>
-      <model-viewer
-        alt="Neil Armstrong's Spacesuit from the Smithsonian Digitization Programs Office and National Air and Space Museum"
-        src="https://cdn.glitch.com/5a4e620e-8d0d-4d82-a44f-08f272f0dd9d%2FPorche.glb?v=1630992992904"
-        ar
-        poster="https://cdn.glitch.com/5a4e620e-8d0d-4d82-a44f-08f272f0dd9d%2Fporche.png?v=1630993427233"
-        shadow-intensity="1"
-        camera-controls
-        touch-action="pan-y"
-      ></model-viewer>
+    <div
+      id="retrive-container"
+      class="container"
+      style="margin-top: 1em; display: none"
+    >
+      <button id="retrive-button" type="submit">Retrieve</button>
     </div>
     <script type="module" src="script.js"></script>
   </body>
