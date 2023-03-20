@@ -270,7 +270,7 @@ For now, you can add this code which will handle any errors returned from the ca
 # Troubleshooting
 
 1. Make sure you have registered an application on your Appearition platform account
-2. Make sure you generate an API Token for your registered applicatio
+2. Make sure you generate an API Token for your registered application
 3. Assign the following roles to the registered application:
     - ArViewerAll
     - InternalContentLibraryViewerAll
