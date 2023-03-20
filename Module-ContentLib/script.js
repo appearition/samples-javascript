@@ -13,7 +13,6 @@ const retriveContainer = document.getElementById('retrive-container');
 
 const fileInput = document.getElementById('model-file');
 let file;
-let fileKey;
 
 fileInput.addEventListener('change', (event) => {
   file = event.target.files[0];
@@ -39,23 +38,20 @@ const processUpload = async (event) => {
 
   const data = await createItem(item);
 
-  fileKey = data.Data.Key;
-
   const formData = new FormData();
   formData.append('file', file);
 
-  const data2 = await uploadModel(formData, fileKey);
+  const data2 = await uploadModel(formData);
 
   if (data2) retriveContainer.style.display = 'flex';
-  console.log(data2);
   uploadButton.textContent = 'Upload';
 };
 
 const retriveItem = async (event) => {
   event.preventDefault();
   retriveButton.textContent = 'Retrieving...';
-  const data = await getItem(fileKey);
-  console.log(data.Data.Files[0].Url);
+  const data = await getItem();
+  // console.log(data.Data.Files[0].Url);
 
   let modelViewer = `<model-viewer
   src=${data.Data.Files[0].Url}
