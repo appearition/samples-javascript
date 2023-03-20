@@ -2,9 +2,10 @@ import {
   createItem,
   uploadModel,
   getItem,
-  authToken,
+  apiToken,
   tenant,
   channelId,
+  apiRootUrl,
 } from './utils/Appearition.js';
 
 const uploadButton = document.getElementById('upload-button');
@@ -23,7 +24,7 @@ const processUpload = async (event) => {
 
   if (!file) return;
 
-  if (!authToken || !tenant || !channelId)
+  if (!apiToken || !tenant || !channelId || !apiRootUrl)
     return alert(
       'Please fill in the required fields in the utils/Appearition.js file.'
     );
