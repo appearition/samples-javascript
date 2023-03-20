@@ -1,9 +1,14 @@
-const authToken = ''; // Authentication token from project dashboard
-const tenant = ''; // Tenant ID of the tenant you want to upload to
-const channelId = ''; // Channel ID of the channel you want to upload to
+export const authToken = ''; // Authentication token from project dashboard
+export const tenant = ''; // Tenant ID of the tenant you want to upload to
+export const channelId = ''; // Channel ID of the channel you want to upload to
 const providerName = 'InternalContentLibrary';
 
 export const createItem = async (item) => {
+  if (!authToken || !tenant || !channelId || !providerName)
+    throw new Error(
+      'Please provide all required parameters. (authToken, tenant, channelId, providerName)'
+    );
+
   const res = await fetch(
     `https://api.appearition.com/${tenant}/api/ContentManager/AddNewItem/${channelId}?providerName=${providerName}`,
     {

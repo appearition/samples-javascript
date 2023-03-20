@@ -1,4 +1,11 @@
-import { createItem, uploadModel, getItem } from './utils/Appearition.js';
+import {
+  createItem,
+  uploadModel,
+  getItem,
+  authToken,
+  tenant,
+  channelId,
+} from './utils/Appearition.js';
 
 const uploadButton = document.getElementById('upload-button');
 const retriveButton = document.getElementById('retrive-button');
@@ -16,6 +23,11 @@ const processUpload = async (event) => {
   event.preventDefault();
 
   if (!file) return;
+
+  if (!authToken || !tenant || !channelId)
+    return alert(
+      'Please fill in the required fields in the utils/Appearition.js file.'
+    );
 
   uploadButton.textContent = 'Uploading...';
   const item = {
