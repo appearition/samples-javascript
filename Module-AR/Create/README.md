@@ -12,4 +12,3 @@ Making API Requests to the Appearition Platform requires an application to have 
 >
 > For more information about registering an application and creating an API Token, please [click here](/sdk/api-access/#application_registration)
 
-
