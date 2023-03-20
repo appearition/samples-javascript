@@ -1,8 +1,9 @@
 # Introduction
 
-This sample is an introduction to the various API method to use when creating a record for the *AR* module.
-Once created, you will be able to then retrieve and view the record via the [List](../List/) sample.
-To edit a record including target images and media, refer to the [Edit](../Edit/) sample.
+The samples under this section are an introduction to the various API methods of the *AR* module.
+For listing records please refer to the [List](../List/) sample.
+For creating a record please refer to the [Create](../Create/) sample.
+For editing a record, including adding/removing target images and media, refer to the [Edit](../Edit/) sample.
 
 # Verify access to the Appearition Platform
 
