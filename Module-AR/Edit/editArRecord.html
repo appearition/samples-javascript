@@ -1,0 +1,1047 @@
+<html>
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+	<h1>Edit AR Experience</h1>
+
+    <p>
+        This sample project will connect to the Appearition Platform and provide functionalty to modify a record on the AR Target Image and Media module. You
+        will first be presented with a list of existing records to choose from (refer <a href="listArRecords.html">List AR Records</a>). If you don't have any
+        records available, refer to this sample <a href="createArRecord.html">Create</a>
+        <br/><br/>
+        This sample will also show how the Content Library is linked to the AR module for Target Images and Media.
+    </p>
+
+    <div class="panel panel-default" id="pnlList">
+        <div class="panel-heading">Select an AR record</div>
+        <div class="panel-body" id="arExperiences">None Loaded</div>
+        <div class="panel-footer">
+            <button id="btnLoadExperiences" class="btn btn-primary" disabled onclick="javascript: loadArExperiences();">Get records</button>
+        </div>
+    </div>
+
+    <div class="panel panel-default" id="pnlEdit" style="display: none;">
+        <div class="panel-heading">Edit AR record</div>
+        <div class="panel-body" id="arExperiences">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-sm-4 col-sm-4 control-label" for="lblAssetId">AR Target Key (Asset ID)</label>
+                    <div class="col-sm-8">
+                        <span id="lblAssetId"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 col-sm-4 control-label" for="txtName">Name</label>
+                    <div class="col-sm-8">
+                        <input id="txtName" type="text" class="form-control" placeholder="enter name here...">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 col-sm-4 control-label" for="txtShortDescription">Short Description (500 chars)</label>
+                    <div class="col-sm-8">
+                        <textarea id="txtShortDescription" type="text" class="form-control" placeholder="enter short description here..." maxlength="500" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 col-sm-4 control-label" for="txtLongDescription">Long Description</label>
+                    <div class="col-sm-8">
+                        <textarea id="txtLongDescription" type="text" class="form-control" placeholder="enter long description here..." rows="5"></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 col-sm-4 control-label">Target Image</label>
+                    <div class="col-sm-8">
+                        <div id="pnlExistingTargetImage" style="display: none;"></div>
+                        <a id="btnAddTargetImage" class="btn btn-link" onclick="javascript: onAddTargetImage()" style="display: none;">Add</a>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 col-sm-4 control-label">Media</label>
+                    <div class="col-sm-8">
+                        <div id="pnlExistingMedia"></div>
+                        <a id="btnAddMedia" class="btn btn-link" onclick="javascript: onAddMedia()">Add</a>
+                    </div>
+                </div>
+            </form>  
+
+        </div>
+        <div class="panel-footer">
+            <button id="btnSave" class="btn btn-primary" onclick="javascript: save();">Save</button>
+            <button id="btnCanceel" class="btn btn-link" onclick="javascript: cancel();">Cancel</button>
+        </div>
+    </div>
+
+    <br />
+
+    <div class="panel panel-default">
+        <div class="panel-heading">Messages</div>
+        <div class="panel-body" id="messages">Starting</div>
+    </div>
+
+    <div id="screenBlocker" style="display: none;">
+        <div id="screenBlockerMessage">
+            <div class="container-fluid">
+                <div class="row blocker-header">
+                    <div class="col-sm-12 text-left">
+                        <p>Please wait</p>
+                    </div>
+                </div>
+                <div class="row blocker-body">
+                    <div class="col-sm-2">
+                        <span class="glyphicon glyphicon-time blocker-icon"></span>
+                    </div>
+                    <div class="col-sm-10">
+                        <div style="margin-top: 10px;" id="screenBlockerMessageText"><em>processing, please wait...</em></div>
+                    </div>
+                </div>
+                <div class="row blocker-footer">
+                    <div class="col-sm-12 text-right">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="pnlAddMedia" class="modal fade" role="dialog" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">Add Media</div>
+                <div class="modal-body model-body-scroll">
+                    <select id="lstContentMediaType" class="form-control" onchange="javascript: onMediaTypeSelected()"></select>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default btn-sm" onclick="javascript: onCloseAddMedia()">Cancel</button>
+                </div>
+            </div>
+        </div>    
+    </div>
+
+    <div id="pnlContentLibrary" class="modal fade" role="dialog" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">Content Library</div>
+                <div class="modal-body model-body-scroll">
+                    <select id="lstContentLibraryProviders" class="form-control" onchange="javascript: onContentLibraryProviderSelected()"></select>
+                    <div id="pnlContentLibraryItems" class="clearfix"></div>
+                    <a id="btnContentLibraryNextPage" class='btn btn-link' style="display:none" onclick='javascript: showNextPageContent()'>load next</a>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default btn-sm" onclick="javascript: onCloseContentLibrary()">Cancel</button>
+                </div>
+            </div>
+        </div>    
+    </div>
+
+</body>
+<script src="extensions.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="https://s3-ap-southeast-2.amazonaws.com/cdn.appearition.com/sdk/js/core/v1.0.0/appearition.min.js"></script>
+<script src="https://s3-ap-southeast-2.amazonaws.com/cdn.appearition.com/sdk/js/modules/authentication/v1.0.0/appearition.authentication.min.js"></script>
+<script src="https://s3-ap-southeast-2.amazonaws.com/cdn.appearition.com/sdk/js/modules/arTargetImageAndMedia/v1.0.0/appearition.arTargetImageAndMedia.min.js"></script>
+<script src="http://cdn.appearition.com/sdk/js/modules/contentLibrary/v1.0.0/appearition.contentLibrary.min.js"></script>
+
+<script type="text/javascript">
+
+    // Appearition Platform Account Details
+    var apiUrl = '';        // Your API URL;
+    var apiToken = '';      // Your API Token;
+    var myChannelId = 0;    // Your channel ID;
+
+    // Data
+    var arTargets;
+    var selectedArTarget;
+    var contentLibraryProviders;
+    var contentLibraryItems;
+    var selectedContentLibraryProvider;
+    var currentContentLibrarySearchPage;
+    var availableContentMediaTypes;
+    var pnlAddMedia;
+    var onCloseAddMedia;
+
+    // AR Controls
+    var pnlList;
+    var btnLoadExperiences;    
+    var pnlEdit;    
+    var lblAssetId;
+    var txtName;
+    var txtShortDescription;
+    var txtLongDescription;
+    var btnSave;    
+    var pnlExistingTargetImage;
+    var pnlContentLibrary;
+    var pnlExistingMedia;
+    var btnAddTargetImage;
+    var btnAddMedia;
+    var lstContentMediaType;
+
+    // Content Library controls
+    var lstContentLibraryProviders;
+    var pnlContentLibraryItems;
+    var btnContentLibraryNextPage;
+    var contentLibraryForTargetImage = false;
+    var contentLibraryForMedia = false;
+
+    // Other controls
+    var screenBlocker;
+    var screenBlockerMessageText;
+
+    $(document).ready(function () {
+
+        initUiControls();
+
+        printMessage("Verifying session to Appearition platform...");
+        Appearition.Authentication.VerifySession(apiUrl, apiToken, myChannelId)
+                    .then(
+                        () =>{
+                            printMessage("Session has been verified");
+                            btnLoadExperiences.removeAttr("disabled")
+                        },
+                        (error) =>{
+                            handleResponseErrors("Session cannot be verified");
+                            handleResponseErrors(error);
+                        }
+                    )
+                    .then(
+                        () => {
+                            listContentLibraryProviders();    
+                            loadContentMediaTypes();                        
+                        }
+                    );
+        
+    });
+
+    function initUiControls(){
+        // AR controls
+        pnlList = $("#pnlList");
+        btnLoadExperiences = $("#btnLoadExperiences");
+        pnlEdit = $("#pnlEdit");
+        lblAssetId = $("#lblAssetId");
+        txtName  = $("#txtName");
+        txtShortDescription = $("#txtShortDescription");
+        txtLongDescription = $("#txtLongDescription");
+        btnCreateExperience = $("#btnCreateExperience");
+        btnSave = $("#btnSave");
+        pnlExistingTargetImage = $("#pnlExistingTargetImage");
+        pnlExistingMedia = $("#pnlExistingMedia");
+        btnAddTargetImage = $("#btnAddTargetImage");
+        btnAddMedia = $("#btnAddMedia");
+        lstContentMediaType = $("#lstContentMediaType");
+        pnlAddMedia = $("#pnlAddMedia");
+        onCloseAddMedia = $("#onCloseAddMedia")
+
+        // Content Library controls
+        pnlContentLibrary = $("#pnlContentLibrary");
+        lstContentLibraryProviders = $("#lstContentLibraryProviders");
+        pnlContentLibraryItems = $("#pnlContentLibraryItems");
+        btnContentLibraryNextPage = $("#btnContentLibraryNextPage");
+
+        // Other controls
+        screenBlocker = $("#screenBlocker");
+        screenBlockerMessageText = $("#screenBlockerMessageText");
+    }
+
+    // ----------------------------------------------------------------------
+    // Listing records
+
+    function loadArExperiences() {
+        $('#arExperiences').html('Loading...');
+
+        Appearition.ArTargetImageAndMedia.List(
+            JSON.stringify({
+                Page: 0,
+                RecordsPerPage: 10,
+                IncludeTargetImages: true,
+                IncludeMedia: true
+            }),
+            {                
+                channelId: myChannelId,
+                beforeSend: function (request) {
+                    printMessage("Calling ArTarget/List API...");
+                },
+                complete: function () {
+                    printMessage("Call to ArTarget/List API completed");
+                },
+                success: function (data) {
+                    arTargets = data.ArTargets;
+                    loadArTargets();
+                },
+                error: function (errorArr, xhr) {                    
+                    handleResponseErrors(errorArr, xhr);
+                    $('#arExperiences').innerHTML = 'Loading failed';
+                }
+            }
+        );
+    }
+
+    function loadArTargets() {
+        var htmlSnip = "<table class='table'><tr><th>Name</th><th>Asset Id (AR Target Key)</th><th>Target Images</th><th>Media</th><th></th></tr>";
+        for (var i = 0; i < arTargets.length; i++) {
+            htmlSnip += showArTarget(i);
+        }
+        htmlSnip += "</table>";
+        $('#arExperiences').html(htmlSnip);
+
+        loadTargetImages();
+    }
+
+    function showArTarget(index) {
+
+        var arTarget = arTargets[index];
+
+        var html = "<tr>"
+            + "<td>" + arTarget.name + "</td>"
+            + "<td>" + arTarget.assetId + "</td>"
+
+        // Render Target Images
+        html += "<td>";
+        for (var i = 0; i < arTarget.targetImages.length; i++) {
+            var targetImage = arTarget.targetImages[i];
+            html += "<img class='target-image' id='" + targetImage.arImageId + "' alt='loading...'/>";
+        }
+        if (arTarget.targetImages.length == 0) {
+            html += "None";
+        }
+        html += "</td>";
+
+        // Render Media
+        html += "<td>";
+        for (var i = 0; i < arTarget.mediaFiles.length; i++) {
+            var media = arTarget.mediaFiles[i];
+            if(!media.isDataQuery) {
+                html += "Media Type: " + media.mediaType + " " + "<a target='blank' href='" + media.url + "'>View</a><br/>";
+            }
+        }
+        if (arTarget.mediaFiles.length == 0) {
+            html += "No Media Available";
+        }
+        html += "</td>";
+
+        html += "<td><button class=\"btn btn-default\" onclick=\"javascript: edit('" + arTarget.assetId + "')\">Edit</button></td>";
+
+        html += "</tr>";
+
+        return html;
+    }
+
+    function loadTargetImages(){
+        for (var i = 0; i < arTargets.length; i++) {
+            for (var x = 0; x < arTargets[i].targetImages.length; x++) {
+                var targetImage = arTargets[i].targetImages[x];
+                getTargetImage(targetImage,
+                    (arImageId, imgSrc)=>{
+                        $("#" + arImageId).attr("src",  imgSrc)
+                    }
+                );
+            }            
+        }
+    }
+
+    // ----------------------------------------------------------------------
+    // Target Images
+
+    function getTargetImage(targetImage, callback) {
+
+        // If the target image has been added from the content library, then we need to go off and get
+        // the image from there.
+        if(targetImage.contentItemKey != null && targetImage.contentItemKey.length > 0){
+            
+            // load target image from content library
+            getItemFromLibrary(
+                targetImage.contentItemProviderName, 
+                targetImage.contentItemKey,
+                (item)=>{
+                    if(!item.IsThumbnailPrivate && item.ThumbnailImage != null && item.ThumbnailImage.Url != null){
+                        callback(targetImage.arImageId, item.ThumbnailImage.Url);
+                        return;
+                    }
+
+                    var src = Appearition.ContentLibrary.FileAsAuthorisedUrl(item.ThumbnailImage.Url);
+                    callback(targetImage.arImageId, src);
+                });
+
+            return;
+        }
+
+        // otherwise, download it from the AR module itself
+        Appearition.ArTargetImageAndMedia.DownloadTargetImageAsDataUrl(
+            targetImage.arImageId,
+            {
+                success: function (data) {
+                    if(callback != null && typeof callback === 'function') {
+                        callback(targetImage.arImageId, data);
+                    }
+                },
+                error: function (error, xhr) {
+                    handleResponseErrors(error, xhr);
+                }
+            });
+    }
+
+    function getTargetImageStatus(arImageId) {
+
+            Appearition.ArTargetImageAndMedia.GetTargetImageQuality(
+                selectedArTarget.arTargetId,
+                arImageId,
+                {
+                    success: function (data) {
+
+                        var btnRemoveTargetImage = $("#btnRemoveTargetImage_" + arImageId);
+                        var lblTargetImageStatus = $("#lblTargetImageStatus_" + arImageId);
+
+                        if (data.isReady || data.isQualityChecked) {
+                            btnRemoveTargetImage.show();
+                            lblTargetImageStatus.html("");
+                        } else {
+
+                            lblTargetImageStatus.html("Processing on server...")
+
+                            // check again in 10 seconds
+                            window.setTimeout(function () {
+                                getTargetImageStatus(arImageId);
+                            }, 10000);
+                        }
+
+                    },
+                    error: function (errors) {
+                        window.MyScreen.ShowError(errors);
+                    }
+                });
+        }
+
+    function onAddTargetImage(){
+        pnlContentLibrary.modal('show');
+        contentLibraryForTargetImage = true;
+    }
+
+    // ----------------------------------------------------------------------
+    // Media and Media Types
+    
+    function loadContentMediaTypes(){
+
+        Appearition.ArTargetImageAndMedia.AvailableContentMediaTypes(
+            {
+                beforeSend: function(){
+                    printMessage("Loading Content Media types");
+                },
+                success: function (data) {
+
+                    availableContentMediaTypes = data;
+
+                    lstContentMediaType.append("<option value=''>Choose Content Media Type...</option>");
+                    $.each(data, index => {
+                        var mediaType = data[index];
+                        lstContentMediaType.append("<option value='" + mediaType.Name + "'>" + mediaType.Name + "</option>");
+                    });
+
+                },
+                error: function (errors) {
+                    handleResponseErrors(errors);
+                }
+            });        
+    }
+
+    function onMediaTypeSelected(){
+
+        if(lstContentMediaType.val() == ''){
+            return;
+        }
+
+        contentLibraryForMedia = true;
+        pnlAddMedia.modal('hide');
+        pnlContentLibrary.modal('show');        
+    }
+
+    function onCloseAddMedia(){
+        pnlAddMedia.modal('hide');
+    }
+
+    function onAddMedia(){
+        lstContentMediaType.val("");
+        pnlAddMedia.modal('show');
+    }
+
+    function getMedia(media, callback) {
+
+        // If the media has been added from the content library, then we need to go off and get
+        // the URL from there.
+        if(media.contentItemKey != null && media.contentItemKey.length > 0){
+            
+            // load target image from content library
+            getItemFromLibrary(
+                media.contentItemProviderName, 
+                media.contentItemKey,
+                (item)=>{
+                    if(!item.IsPrivate && item.Files != null && item.Files.length > 0 && item.Files[0].Url != null){
+                        callback(media, item.Files[0].Url);
+                        return;
+                    }
+
+                    var src = Appearition.ContentLibrary.FileAsAuthorisedUrl(item.Files[0].Url);
+                    callback(media, src);
+                });
+
+            return;
+        }
+
+        // otherwise, download it from the AR module itself
+        callback(media, media.url);
+    }
+
+    // ----------------------------------------------------------------------
+    // Retreiving data from the content library
+
+    function getItemFromLibrary(provider, itemKey, callback) {
+
+        Appearition.ContentLibrary.GetItem(
+            provider,
+            itemKey,
+            {
+                beforeSend: function (request) {
+                    printMessage('Retrieving item from content library...');
+                },
+                success: function (data) {
+                    printMessage('Item was retrieved from content library');
+                    callback(data);
+                },
+                error: function (errors, xhr) {
+                    handleResponseErrors(errors, xhr);
+                }
+            });
+    }
+
+    function listContentLibraryProviders(){
+        Appearition.ContentLibrary.ListProviders({
+                beforeSend: function (request) {
+                    printMessage('Retrieving list of providers for the content library...');
+                },
+                success: function (data) {
+                    printMessage('List of providers for the content library were returned.');
+                    contentLibraryProviders = data;
+                    loadListOfContentProviders();
+                },
+                error: function (errors) {
+                    handleResponseErrors(errors);
+                }
+        });
+    }
+
+    function loadListOfContentProviders(){
+        lstContentLibraryProviders.empty();
+        $.each(contentLibraryProviders, index => {
+
+            if(index==0){
+                var chooseOption = $('<option>',{    
+                    value: '',               
+                    text: 'Choose provider'
+                });
+                lstContentLibraryProviders.append(chooseOption);
+            }
+
+            var provider = contentLibraryProviders[index];
+            
+            var option = $('<option>',{
+                value: provider.ProviderName,
+                text: provider.ProviderDisplayName
+            });
+            lstContentLibraryProviders.append(option);
+        });
+    }
+    
+    function onContentLibraryProviderSelected(e){
+
+        selectedContentLibraryProvider = lstContentLibraryProviders.val();
+        if(selectedContentLibraryProvider == null || selectedContentLibraryProvider.trim().length == 0){
+            return;
+        }
+        
+        currentContentLibrarySearchPage = 0;
+        showPagedContent();
+    }
+
+    function showNextPageContent(){
+        currentContentLibrarySearchPage++;
+        showPagedContent();
+    }
+
+    function showPagedContent() {
+
+        var searchRequest = {
+                FirstPageIsOne: false,
+                Page: currentContentLibrarySearchPage,
+                RecordsPerPage: 10
+            }        
+        
+        Appearition.ContentLibrary.Search(
+            selectedContentLibraryProvider,
+            JSON.stringify(searchRequest),
+            {
+                beforeSend: function () {
+                    postMessage("Searching content library...")
+                },
+                success: function (data) {
+                    postMessage("Content library search complete");
+
+                    if(currentContentLibrarySearchPage == 0) {
+                        contentLibraryItems = data;
+                    }
+                    else{
+                        contentLibraryItems.ItemsFound.push(data.ItemsFound);
+                    }
+                    handleSearchResultsFromContentLibrary(data);
+                },
+                error: function (errors) {
+                    handleResponseErrors(errors);
+                }
+            }
+        );        
+    }
+
+    function handleSearchResultsFromContentLibrary(results){
+        if (contentLibraryItems == null || contentLibraryItems.TotalResults == 0) {
+            printMessage("Content Library search did not return any results")
+            return;
+        }
+
+        // clear the results if this is the first page
+        if(currentContentLibrarySearchPage == 0) {
+            pnlContentLibraryItems.html("");
+        }
+
+        // display each item found
+        $.each(results.ItemsFound, index=>{
+            var contentItem = results.ItemsFound[index];
+
+            var contentItemDiv = "<div class='pull-left selectable-content-item' onclick='javascript: onSelectContentItem(this)' data-content-item-provider-name='" + contentItem.ProviderName + "' data-content-item-key='" + contentItem.Key + "'>";
+            contentItemDiv += "<label>" + contentItem.Title + "</label><br/>";
+
+            if(  contentItem.ThumbnailImage != null 
+              && contentItem.ThumbnailImage.Url != null) {
+
+                if(contentItem.IsThumbnailPrivate){
+                    contentItemDiv += "<div>Thumbnail image is private and will not be loaded</div>";
+                }
+                else {
+                    contentItemDiv += "<img src='" + contentItem.ThumbnailImage.Url + "' class='target-image' alt='no thumbnail'/>";
+                }
+            }
+
+            contentItemDiv += "</div>"
+
+            pnlContentLibraryItems.append(contentItemDiv);
+        });          
+
+        // if there are more results to come, show the load  more button
+        if(contentLibraryItems.ItemsFound.length < contentLibraryItems.TotalResults)
+        {
+            btnContentLibraryNextPage.show();
+        }
+        else{
+            btnContentLibraryNextPage.hide();
+        }
+    }
+
+    function onSelectContentItem(selectedElement){
+        var contentItemProviderName = $(selectedElement).attr('data-content-item-provider-name');
+        var contentItemKey = $(selectedElement).attr('data-content-item-key');        
+
+        if(contentLibraryForTargetImage)
+            saveContentItemAsTargetImage(contentItemProviderName, contentItemKey);
+
+        if(contentLibraryForMedia)
+            saveContentItemAsMedia(contentItemProviderName, contentItemKey);
+
+        onCloseContentLibrary();
+    }
+
+    function onCloseContentLibrary(){
+        pnlContentLibrary.modal('hide');
+        pnlContentLibraryItems.html("");
+
+        contentLibraryForTargetImage = false;
+        contentLibraryForMedia = false;
+    }
+    
+    // ----------------------------------------------------------------------
+    // Select and Edit actions
+
+    function edit(assetId){
+
+        $.each(arTargets, index=> {
+            var arTarget = arTargets[index];
+            if(arTarget.assetId == assetId) {
+                selectedArTarget = arTarget;
+            }
+        });
+
+        printMessage("Selected record with AR Target Key (asset id): " + selectedArTarget.assetId);
+
+        editSelectedArTarget();
+    }
+
+    function reloadSelectedArTarget(){
+        Appearition.ArTargetImageAndMedia.Get(
+            selectedArTarget.arTargetId,
+            {
+                beforeSend: function (request) {
+                    showScreenBlocker("Reloading AR record...")
+                    printMessage('Reloading AR record...');
+                },
+                complete: function(){
+                    hideScreenBlocker();
+                },
+                success: function (data) {
+                    printMessage('AR record retrieved.');
+                    selectedArTarget = data;
+                    editSelectedArTarget();
+                },
+                error: function (errors) {
+                    handleResponseErrors(errors);
+                }
+            });
+
+
+    }
+
+    function editSelectedArTarget(){
+
+        pnlList.hide();
+        pnlEdit.show();
+
+        lblAssetId.text(selectedArTarget.assetId);
+        txtName.val(selectedArTarget.name);
+        txtShortDescription.val(selectedArTarget.shortDescription);
+        txtLongDescription.val(selectedArTarget.longDescription);
+        pnlExistingTargetImage.html("");
+        pnlExistingMedia.html("");
+        pnlExistingTargetImage.hide();
+        btnAddTargetImage.hide();
+
+        contentLibraryForTargetImage = false;
+        contentLibraryForMedia = false;
+
+        if(selectedArTarget.targetImages.length == 0){
+            btnAddTargetImage.show();
+        }
+        else {
+            pnlExistingTargetImage.show();
+            for (var x = 0; x < selectedArTarget.targetImages.length; x++) {
+                var targetImage = selectedArTarget.targetImages[x];
+                getTargetImage(targetImage,
+                    (arImageId, imgSrc)=>{
+                        var imgDiv = "<div>"
+                            + "<img class='target-image' id='" + arImageId + "' src='" + imgSrc + "' alt='loadig...'/>"
+                            + "<a id='btnRemoveTargetImage_" + arImageId + "' class='btn btn-link' style='display:none' onclick='javascript: removeTargetImage(" + arImageId + ")'>Remove</a>"
+                            + "<span id='lblTargetImageStatus_" + arImageId + "' ></span>"
+                            + "</div>";
+
+                        pnlExistingTargetImage.append(imgDiv);
+
+                        getTargetImageStatus(arImageId);
+                    }
+                );
+            }     
+        }            
+
+        for (var i = 0; i < selectedArTarget.mediaFiles.length; i++) {         
+            var media = selectedArTarget.mediaFiles[i];
+            if(media.isDataQuery) return;
+
+            getMedia(media,
+                (media, src) =>{
+                    
+                    var mediaDiv = "Media Type: " + media.mediaType + ": "; 
+                    mediaDiv += "<a class='btn btn-link' target='blank' href='" + src + "'>View</a>";
+                    mediaDiv +=  "<a class='btn btn-link' onclick='javascript: removeMedia(" + media.arMediaId + ")'>Remove</a>";
+                    mediaDiv +=  "<br/>";
+
+                    pnlExistingMedia.append(mediaDiv);
+                });
+
+        }
+    }
+
+    function cancel(){
+        selectedArTarget = null;
+        lblAssetId.val(null);
+        txtName.val(null);
+        txtShortDescription.val(null);
+        txtLongDescription.val(null);
+
+        pnlList.show();
+        pnlEdit.hide();
+        loadArExperiences();
+    }
+
+    function save(){
+
+        if(selectedArTarget.name != txtName.val()) {
+            printMessage("Updating Name by calling ArTarget/UpdateName")
+            updateName()
+        }
+        else{
+            printMessage("Name has not changed")
+        }
+
+        if(selectedArTarget.shortDescription != txtShortDescription.val()) {
+            printMessage("Updating Short Description by calling ArTarget/UpdateShortDescription")
+            updateShortDescription()
+        }
+        else{
+            printMessage("Short Description has not changed")
+        }
+
+        if(selectedArTarget.longDescription != txtLongDescription.val()) {
+            printMessage("Updating Long Description by calling ArTarget/UpdateLongDescription")
+            updateLongDescription()
+        }
+        else{
+            printMessage("Long Description has not changed")
+        }
+    }
+
+    // ----------------------------------------------------------------------
+    // Update details
+
+    function updateName(){
+        
+        selectedArTarget.name = txtName.val();
+
+        Appearition.ArTargetImageAndMedia.UpdateName(
+            selectedArTarget.arTargetId,
+            JSON.stringify({ name: selectedArTarget.name }),
+            {
+                beforeSend: function(){
+                    showScreenBlocker("Saving name...")
+                },
+                complete: function(){
+                    hideScreenBlocker();
+                },
+                success: function(data) {
+                    printMessage("Name saved")
+                },
+                error: function(errors) {
+                    handleResponseErrors(errors)
+                }
+
+            }
+        );
+    }
+
+    function updateShortDescription(){
+        
+        selectedArTarget.shortDescription = txtShortDescription.val();
+
+        Appearition.ArTargetImageAndMedia.UpdateShortDescription(
+            selectedArTarget.arTargetId,
+            JSON.stringify({ shortDescription: selectedArTarget.shortDescription }),
+            {
+                beforeSend: function(){
+                    showScreenBlocker("Saving short description...")
+                },
+                complete: function(){
+                    hideScreenBlocker();
+                },
+                success: function(data) {
+                    printMessage("Short description saved")
+                },
+                error: function(errors) {
+                    handleResponseErrors(errors)
+                }
+
+            }
+        );
+    }
+
+    function updateLongDescription(){
+        
+        selectedArTarget.longDescription = txtLongDescription.val();
+
+        Appearition.ArTargetImageAndMedia.UpdateLongDescription(
+            selectedArTarget.arTargetId,
+            JSON.stringify({ longDescription: selectedArTarget.longDescription }),
+            {
+                beforeSend: function(){
+                    showScreenBlocker("Saving long description...")
+                },
+                complete: function(){
+                    hideScreenBlocker();
+                },
+                success: function(data) {
+                    printMessage("Long description saved")
+                },
+                error: function(errors) {
+                    handleResponseErrors(errors)
+                }
+
+            }
+        );
+    }
+
+    // ----------------------------------------------------------------------
+    // Updating target images
+
+    function saveContentItemAsTargetImage(contentItemProviderName, contentItemKey) {
+
+        var requestData = {
+            contentItemProviderName: contentItemProviderName,
+            contentItemKey: contentItemKey
+        };
+        
+        Appearition.ArTargetImageAndMedia.AddTargetMarkerFromContentItem(
+            selectedArTarget.arTargetId,
+            JSON.stringify(requestData),
+            {
+                beforeSend: function (request) {
+                    showScreenBlocker("Adding content item as target...")
+                    printMessage('Adding content item as target...');
+                },
+                complete: function(){
+                    hideScreenBlocker();
+                },
+                success: function (data) {
+                    printMessage('Content item was added as a target.');
+                    reloadSelectedArTarget();
+                },
+                error: function (errors) {
+                    handleResponseErrors(errors)
+                }
+            });    
+    }
+
+    function removeTargetImage(arImageId){
+
+        if(!confirm("Remove Target Image?")) return;
+
+        Appearition.ArTargetImageAndMedia.UnlinkArImage(
+            selectedArTarget.arTargetId,
+            arImageId,
+            {
+                beforeSend: function (request) {
+                    showScreenBlocker("Removing target image...")
+                    printMessage('Removing target image...');
+                },
+                complete: function(){
+                    hideScreenBlocker();
+                },
+                success: function (data) {
+                    printMessage('Target image removed.');                        
+                    reloadSelectedArTarget();
+                },
+                error: function (errors, xhr) {
+                    handleResponseErrors(errors, xhr);
+                }
+            });
+
+    }
+
+    // ----------------------------------------------------------------------
+    // Updating media
+
+    function saveContentItemAsMedia(contentItemProviderName, contentItemKey) {
+
+        var requestData = {
+            mediaType: lstContentMediaType.val(),
+            contentItemProviderName: contentItemProviderName,
+            contentItemKey: contentItemKey
+        };
+        
+        Appearition.ArTargetImageAndMedia.CreateMedia(
+            selectedArTarget.arTargetId,
+            JSON.stringify(requestData),
+            {
+                beforeSend: function (request) {
+                    showScreenBlocker("Adding content item as media...")
+                    printMessage('Adding content item as media...');
+                },
+                complete: function(){
+                    hideScreenBlocker();
+                },
+                success: function (data) {
+                    printMessage('Content item was added as media.');
+                    reloadSelectedArTarget();
+                },
+                error: function (errors) {
+                    handleResponseErrors(errors)
+                }
+            });    
+    }
+
+    function removeMedia(arMediaId){
+
+        if(!confirm("Remove Media?")) return;
+
+        Appearition.ArTargetImageAndMedia.UnlinkMedia(
+            selectedArTarget.arTargetId,
+            arMediaId,
+            {
+                beforeSend: function (request) {
+                    showScreenBlocker("Removing media...")
+                    printMessage('Removing media...');
+                },
+                complete: function(){
+                    hideScreenBlocker();
+                },
+                success: function (data) {
+                    printMessage('Media removed.');                        
+                    reloadSelectedArTarget();
+                },
+                error: function (errors, xhr) {
+                    handleResponseErrors(errors, xhr);
+                }
+            });
+
+    }
+
+    // ----------------------------------------------------------------------
+    // Error handling and output
+
+    function handleResponseErrors(error, xhr) {
+
+        var msg = "<span class='error'>";
+
+        if (error != null) {
+            if(Array.isArray(error)) {
+                error.foreach(function (e) {
+                    msg += e + "; ";
+                });
+            }
+            else{
+                msg += error;
+            }
+        }
+
+        console.log(xhr);
+        if (xhr != null) {
+            msg = msg + "Status Code: " + xhr.status 
+            if(xhr.responseText)
+            {
+                msg += ", ResponseText: " + xhr.responseText + "; ";                
+            }
+        }
+
+        msg += "</span>"
+
+        printMessage(msg);
+    }
+
+    function printMessage(msg) {
+        $('#messages').append("<br/>");
+        $('#messages').append(msg);
+    }
+
+    function showScreenBlocker(msg){
+        screenBlockerMessageText.html(msg);
+        screenBlocker.show();
+    }
+
+    function hideScreenBlocker(){
+        screenBlocker.hide();
+        screenBlockerMessageText.html("");
+    }
+
+</script>
+
+</html>

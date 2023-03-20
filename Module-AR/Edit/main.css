@@ -1,0 +1,71 @@
+
+.error {
+    color: #ff0000;
+}
+.target-image {
+    width: 100px;
+    height: auto;
+}
+.selectable-content-item {            
+    padding: 2px;
+    cursor: pointer;
+    width: 150px;
+    height: 150px;
+    margin: 2px;
+}
+.selectable-content-item:hover{
+    border: 1px solid darkgray;
+}
+
+#screenBlocker {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2000;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+#screenBlockerMessage {
+    position: relative;
+    margin: 100px auto;
+    width: 350px;
+    text-align: center;
+    border: 1px solid #000084;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+    
+}
+
+.blocker-header {
+    background-image: linear-gradient(to right, #000084, #c9c9c9);
+    color: #ffffff;
+    padding-top: 5px;
+}
+
+.blocker-body {
+    padding-top: 10px;
+}
+
+.blocker-icon {
+    font-size: 35px;
+    color: #000084;
+}
+
+.blocker-footer {
+    margin-top: 30px;
+    background-color: #c9c9c9;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.model-body-scroll {
+    max-height: 600px;
+    overflow: auto;
+}
+
+.modal-body .scroll-view {
+    max-height: 400px;
+    overflow: auto;
+}
