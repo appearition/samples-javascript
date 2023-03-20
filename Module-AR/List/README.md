@@ -255,3 +255,24 @@ For now, you can add this code which will handle any errors returned from the ca
 # Live Demo
 
 <a target="_blank" href="http://docs.appearition.com/tutorials/developer/web/ar-experiences/samples/listArRecords.html">Click here</a> to see a live demo of this sample.
+
+# Getting Started
+
+1. Clone the project
+2. Open 'listArRecords.html' file and enter the following parameters (lines 44-46):
+
+- **apiUrl**: Found on the API Access screen of your Appearition platform account
+- **apiToken**: The API token you created as part of registering the application.
+- **myChannelId**: The channel id (aka ProjectId)
+
+3. Run a local server and open the 'listArRecords.html' file in your browser. 
+
+# Troubleshooting
+
+1. Make sure you have registered an application on your Appearition platform account
+2. Make sure you generate an API Token for your registered applicatio
+3. Assign the following roles to the registered application:
+    - ArViewerAll
+    - InternalContentLibraryViewerAll
+    - TenantContentLibraryViewerAll
+4. Assign your channel to the registered application.
