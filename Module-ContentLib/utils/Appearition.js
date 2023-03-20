@@ -1,24 +1,26 @@
-export const authToken = ''; // Authentication token from project dashboard
+export const apiToken = ''; // Authentication token from project dashboard // apiToken
 export const tenant = ''; // Tenant ID of the tenant you want to upload to
 export const channelId = ''; // Channel ID of the channel you want to upload to
+export const apiRootUrl = ''; // API root URL
 const providerName = 'InternalContentLibrary';
 
 let itemKey;
+const apiUrl = `https://${apiRootUrl}/${tenant}/api`;
 
 export const createItem = async (item) => {
-  if (!authToken || !tenant || !channelId || !providerName)
+  if (!apiToken || !tenant || !channelId || !providerName)
     throw new Error(
-      'Please provide all required parameters. (authToken, tenant, channelId, providerName)'
+      'Please provide all required parameters. (apiToken, tenant, channelId, providerName)'
     );
 
-  const addNewItemAPI = `https://api.appearition.com/${tenant}/api/ContentManager/AddNewItem/${channelId}?providerName=${providerName}`;
+  const addNewItemAPI = `${apiUrl}/ContentManager/AddNewItem/${channelId}?providerName=${providerName}`;
 
   const res = await fetch(addNewItemAPI, {
     method: 'POST',
     body: JSON.stringify(item),
     headers: {
       'Content-Type': 'application/json',
-      'authentication-token': authToken,
+      'authentication-token': apiToken,
       'api-version': 2,
     },
   });
@@ -28,12 +30,12 @@ export const createItem = async (item) => {
 };
 
 export const uploadModel = async (modelData, key) => {
-  const uploadNewFileIntoItemAPI = `https://api.appearition.com/${tenant}/api/ContentManager/UploadNewFileIntoItem/${channelId}?providerName=${providerName}&itemKey=${itemKey}`;
+  const uploadNewFileIntoItemAPI = `${apiUrl}/ContentManager/UploadNewFileIntoItem/${channelId}?providerName=${providerName}&itemKey=${itemKey}`;
   const res = await fetch(uploadNewFileIntoItemAPI, {
     method: 'POST',
     body: modelData,
     headers: {
-      'authentication-token': authToken,
+      'authentication-token': apiToken,
       'api-version': 2,
     },
   });
@@ -43,12 +45,12 @@ export const uploadModel = async (modelData, key) => {
 };
 
 export const uploadImage = async (imageData, key) => {
-  const uploadNewFileIntoItemAPI = `https://api.appearition.com/${tenant}/api/ContentManager/UploadNewFileIntoItem/${channelId}?providerName=${providerName}&itemKey=${itemKey}`;
+  const uploadNewFileIntoItemAPI = `${apiUrl}/ContentManager/UploadNewFileIntoItem/${channelId}?providerName=${providerName}&itemKey=${itemKey}`;
   const res = await fetch(uploadNewFileIntoItemAPI, {
     method: 'POST',
     body: imageData,
     headers: {
-      'authentication-token': authToken,
+      'authentication-token': apiToken,
       'api-version': 2,
     },
   });
@@ -58,12 +60,12 @@ export const uploadImage = async (imageData, key) => {
 };
 
 export const uploadThumbnail = async (thumbnailData, key) => {
-  const uploadNewThumbnailIntoItemAPI = `https://api.appearition.com/${tenant}/api/ContentManager/UploadNewFileIntoItem/${channelId}?providerName=${providerName}&itemKey=${itemKey}&isThumbnailImage=true`;
+  const uploadNewThumbnailIntoItemAPI = `${apiUrl}/ContentManager/UploadNewFileIntoItem/${channelId}?providerName=${providerName}&itemKey=${itemKey}&isThumbnailImage=true`;
   const res = await fetch(uploadNewThumbnailIntoItemAPI, {
     method: 'POST',
     body: thumbnailData,
     headers: {
-      'authentication-token': authToken,
+      'authentication-token': apiToken,
       'api-version': 2,
     },
   });
@@ -73,10 +75,10 @@ export const uploadThumbnail = async (thumbnailData, key) => {
 };
 
 export const getItem = async () => {
-  const getItemAPI = `https://api.appearition.com/${tenant}/api/Content/Item/${channelId}?providerName=${providerName}&itemKey=${itemKey}`;
+  const getItemAPI = `${apiUrl}/Content/Item/${channelId}?providerName=${providerName}&itemKey=${itemKey}`;
   const res = await fetch(getItemAPI, {
     headers: {
-      'authentication-token': authToken,
+      'authentication-token': apiToken,
       'api-version': 2,
     },
   });
