@@ -14,3 +14,13 @@ A sample project demostrating how to use the content libray module for managing 
 3. Run a local server and open the `index.html` file in your browser. You should be able to upload a 3d model and retrive to preview it in the 3d viewer.
 
 4. The functions with APIs for uploading and retrieving assets are in `utils/Appearition.js` file. You can use these functions to integrate the content library module in your application.
+
+## Troubleshooting
+
+1. Make sure you have registered an application on your Appearition platform account
+2. Make sure you generate an API Token for your registered application
+3. Assign the following roles to the registered application:
+   - InternalContentLibraryCreator
+   - InternalContentLibraryEditorAll
+   - InternalContentLibraryViewerAll
+4. Assign your channel to the registered application.

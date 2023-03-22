@@ -2,16 +2,33 @@ export const apiToken = ''; // Authentication token from project dashboard // ap
 export const tenant = ''; // Tenant ID of the tenant you want to upload to
 export const channelId = ''; // Channel ID of the channel you want to upload to
 export const apiRootUrl = ''; // API root URL
-const providerName = 'InternalContentLibrary';
 
+let providerName;
 let itemKey;
 const apiUrl = `https://${apiRootUrl}/${tenant}/api`;
 
 export const createItem = async (item) => {
-  if (!apiToken || !tenant || !channelId || !providerName)
+  if (!apiToken || !tenant || !channelId || !apiRootUrl)
     throw new Error(
-      'Please provide all required parameters. (apiToken, tenant, channelId, providerName)'
+      'Please provide all required parameters. (apiToken, tenant, channelId, apiRootUrl)'
     );
+
+  const provider = await fetch(`${apiUrl}/Content/Providers/${channelId}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      'authentication-token': apiToken,
+      'api-version': 2,
+    },
+  });
+
+  const providerData = await provider.json();
+  providerName = providerData.Data[0].ProviderName;
+
+  if (providerName !== 'InternalContentLibrary') {
+    throw new Error(
+      'Please enable InternalContentLibrary provider in the tenant settings.'
+    );
+  }
 
   const addNewItemAPI = `${apiUrl}/ContentManager/AddNewItem/${channelId}?providerName=${providerName}`;
 
