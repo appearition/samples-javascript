@@ -37,6 +37,10 @@ An AR record can hold many `media`. Media represents any kind of content that yo
 
 `mediaType` is an abstracted property that gives you the ability to  control how you present and process different types of content on your  front end applications. You will find existing `mediaTypes` already defined such as `model`, `image`, `video`. However if your application logic or your target front end device demands a specific type of content, then you can define your own `mediaType` and use it when adding `media` to your AR records. 
 
+> ***Read more about mediaTypes***
+>
+> [click here](http://docs.appearition.com/admin/mediaType) to read more
+
 # Data and Data Providers
 
 Data is another type of `media` which is stored against an AR record. A `Data Provider` is the type of `data store` you need to retrieve the data from. Examples include `MS SQL Server` or `URI`. 
