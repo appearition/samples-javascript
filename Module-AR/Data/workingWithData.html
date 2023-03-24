@@ -1,146 +1,239 @@
-
 <html>
-<head>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="main.css">
-</head>
-<body>
-	<h1>Using Data with AR records</h1>
+  <head>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="main.css" />
+  </head>
+  <body>
+    <h1cc>Using Data with AR records</h1cc>
 
     <p>
-        This sample project will guide you on setting up data querys for an AR record. 
+      This sample project will guide you on setting up data querys for an AR
+      record.
     </p>
 
     <div class="form-horizontal" id="pnlSelectArRecord">
-        <div class="form-group">
-            <label class="col-sm-4 col-sm-4 control-label" for="lstArRecords">Select Existing AR records with a data source</label>
-            <div class="col-sm-8">
-                <select id="lstArRecords" class="form-control select-control" onchange="javascript: onSelectArRecord();"></select>
-            </div>
+      <div class="form-group">
+        <label class="col-sm-4 col-sm-4 control-label" for="lstArRecords"
+          >Select Existing AR records with a data source</label
+        >
+        <div class="col-sm-8">
+          <select
+            id="lstArRecords"
+            class="form-control select-control"
+            onchange="javascript: onSelectArRecord();"
+          ></select>
         </div>
-        <div class="form-group">
-            <label class="col-sm-4 col-sm-4 control-label" for="lstArRecords">or create new AR record</label>
-            <div class="col-sm-8">
-                <a id="btnCreateArRecord" class="btn btn-primary" onclick="javascript: onCreateArRecord();">Create now</a>
-            </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 col-sm-4 control-label" for="lstArRecords"
+          >or create new AR record</label
+        >
+        <div class="col-sm-8">
+          <a
+            id="btnCreateArRecord"
+            class="btn btn-primary"
+            onclick="javascript: onCreateArRecord();"
+            >Create now</a
+          >
         </div>
+      </div>
     </div>
 
     <div class="form-horizontal" id="pnlArRecord" style="display: none">
-        <div class="form-group">
-            <label class="col-sm-4 col-sm-4 control-label" for="lblAssetId">AR Target Key (Asset ID)</label>
-            <div class="col-sm-8">
-                <div id="lblAssetId"></div>
-            </div>
+      <div class="form-group">
+        <label class="col-sm-4 col-sm-4 control-label" for="lblAssetId"
+          >AR Target Key (Asset ID)</label
+        >
+        <div class="col-sm-8">
+          <div id="lblAssetId"></div>
         </div>
-        <div class="form-group">
-            <label class="col-sm-4 col-sm-4 control-label" for="txtName">Name</label>
-            <div class="col-sm-8">
-                <input id="txtName" type="text" class="form-control" placeholder="enter name here...">
-            </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 col-sm-4 control-label" for="txtName"
+          >Name</label
+        >
+        <div class="col-sm-8">
+          <input
+            id="txtName"
+            type="text"
+            class="form-control"
+            placeholder="enter name here..."
+          />
         </div>
-        <hr/>
-        <div class="form-group">
-            <label class="col-sm-4 col-sm-4 control-label" for="lblArMediaId">AR Media ID</label>
-            <div class="col-sm-8">
-                <div id="lblArMediaId"></div>
-            </div>
+      </div>
+      <hr />
+      <div class="form-group">
+        <label class="col-sm-4 col-sm-4 control-label" for="lblArMediaId"
+          >AR Media ID</label
+        >
+        <div class="col-sm-8">
+          <div id="lblArMediaId"></div>
         </div>
-        <div class="form-group">
-            <label class="col-sm-4 col-sm-4 control-label" for="lstDataMediaType">Data Type</label>
-            <div class="col-sm-8">
-                <select id="lstDataMediaType" class="form-control select-control" onchange="javascript: onDataMediaTypeChanged();"></select>
-                <a id="btnUseExample" class="btn btn-link" style="display: none;" onclick="javascript: onUseExample();">Use an example</a>
-            </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 col-sm-4 control-label" for="lstDataMediaType"
+          >Data Type</label
+        >
+        <div class="col-sm-8">
+          <select
+            id="lstDataMediaType"
+            class="form-control select-control"
+            onchange="javascript: onDataMediaTypeChanged();"
+          ></select>
+          <a
+            id="btnUseExample"
+            class="btn btn-link"
+            style="display: none"
+            onclick="javascript: onUseExample();"
+            >Use an example</a
+          >
         </div>
-        <div class="form-group">
-            <label class="col-sm-4 col-sm-4 control-label" for="txtQueryText">Query Text</label>
-            <div class="col-sm-8">
-                <textarea id="txtQueryText" rows="5" class="form-control" placeholder="enter data query" onkeypress="javascript: onQueryTextChanged();"></textarea>
-            </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 col-sm-4 control-label" for="txtQueryText"
+          >Query Text</label
+        >
+        <div class="col-sm-8">
+          <textarea
+            id="txtQueryText"
+            rows="5"
+            class="form-control"
+            placeholder="enter data query"
+            onkeypress="javascript: onQueryTextChanged();"
+          ></textarea>
         </div>
-        <div class="form-group">
-            <label class="col-sm-4 col-sm-4 control-label" for="lstDataTransformProvider">Data Transformation</label>
-            <div class="col-sm-8">
-                <select id="lstDataTransformProvider" class="form-control select-control" onchange="javascript: onDataTransformTypeChanged();"></select>
-                <textarea type="text" id="txtDataTransformTemplate" class="form-control" rows="5" onchange="javascript: onMediaTransformTemplateChanged();"></textarea>
-                <div id="pnlDataTransformTemplateSamples"></div>
-            </div>
+      </div>
+      <div class="form-group">
+        <label
+          class="col-sm-4 col-sm-4 control-label"
+          for="lstDataTransformProvider"
+          >Data Transformation</label
+        >
+        <div class="col-sm-8">
+          <select
+            id="lstDataTransformProvider"
+            class="form-control select-control"
+            onchange="javascript: onDataTransformTypeChanged();"
+          ></select>
+          <textarea
+            type="text"
+            id="txtDataTransformTemplate"
+            class="form-control"
+            rows="5"
+            onchange="javascript: onMediaTransformTemplateChanged();"
+          ></textarea>
+          <div id="pnlDataTransformTemplateSamples"></div>
         </div>
-        <div class="form-group">
-            <div class="col-sm-push-4 col-sm-4">
-                <a id="btnSaveArRecord" class="btn btn-default" onclick="javascript: onSaveArRecord();">Save</a>                
-                <a id="btnCancel" class="btn btn-link" onclick="javascript: onCancel();">Cancel</a>
-            </div>
-            <div class="col-sm-push-4 col-sm-4 text-right">
-                <a id="btnTestQuery" class="btn btn-primary" style="display: none;" onclick="javascript: onTestQuery();">Test Query</a>                
-            </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-push-4 col-sm-4">
+          <a
+            id="btnSaveArRecord"
+            class="btn btn-default"
+            onclick="javascript: onSaveArRecord();"
+            >Save</a
+          >
+          <a
+            id="btnCancel"
+            class="btn btn-link"
+            onclick="javascript: onCancel();"
+            >Cancel</a
+          >
         </div>
+        <div class="col-sm-push-4 col-sm-4 text-right">
+          <a
+            id="btnTestQuery"
+            class="btn btn-primary"
+            style="display: none"
+            onclick="javascript: onTestQuery();"
+            >Test Query</a
+          >
+        </div>
+      </div>
     </div>
 
-    <div id="pnlTestResults" class="modal fade" role="dialog" aria-hidden="true" data-backdrop="static">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">Test Query Results</div>
-                <div class="modal-body model-body-scroll">
-                    <div id="pnlTestQueryOutput"></div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-default btn-sm" onclick="javascript: onCloseTestQueryResults()">Close</button>
-                </div>
-            </div>
-        </div>            
+    <div
+      id="pnlTestResults"
+      class="modal fade"
+      role="dialog"
+      aria-hidden="true"
+      data-backdrop="static"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">Test Query Results</div>
+          <div class="modal-body model-body-scroll">
+            <div id="pnlTestQueryOutput"></div>
+          </div>
+          <div class="modal-footer">
+            <button
+              class="btn btn-default btn-sm"
+              onclick="javascript: onCloseTestQueryResults()"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <br />
 
     <div class="panel panel-default">
-        <div class="panel-heading">Messages</div>
-        <div class="panel-body" id="messages">Starting</div>
+      <div class="panel-heading">Messages</div>
+      <div class="panel-body" id="messages">Starting</div>
     </div>
-    
-    <div id="screenBlocker" style="display: none;">
-        <div id="screenBlockerMessage">
-            <div class="container-fluid">
-                <div class="row blocker-header">
-                    <div class="col-sm-12 text-left">
-                        <p>Please wait</p>
-                    </div>
-                </div>
-                <div class="row blocker-body">
-                    <div class="col-sm-2">
-                        <span class="glyphicon glyphicon-time blocker-icon"></span>
-                    </div>
-                    <div class="col-sm-10">
-                        <div style="margin-top: 10px;" id="screenBlockerMessageText"><em>processing, please wait...</em></div>
-                    </div>
-                </div>
-                <div class="row blocker-footer">
-                    <div class="col-sm-12 text-right">
-                    </div>
-                </div>
+
+    <div id="screenBlocker" style="display: none">
+      <div id="screenBlockerMessage">
+        <div class="container-fluid">
+          <div class="row blocker-header">
+            <div class="col-sm-12 text-left">
+              <p>Please wait</p>
             </div>
+          </div>
+          <div class="row blocker-body">
+            <div class="col-sm-2">
+              <span class="glyphicon glyphicon-time blocker-icon"></span>
+            </div>
+            <div class="col-sm-10">
+              <div style="margin-top: 10px" id="screenBlockerMessageText">
+                <em>processing, please wait...</em>
+              </div>
+            </div>
+          </div>
+          <div class="row blocker-footer">
+            <div class="col-sm-12 text-right"></div>
+          </div>
         </div>
+      </div>
     </div>
+  </body>
+  <script src="extensions.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script
+    src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+    integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+    crossorigin="anonymous"
+  ></script>
+  <script src="https://s3-ap-southeast-2.amazonaws.com/cdn.appearition.com/sdk/js/core/v1.0.0/appearition.min.js"></script>
+  <script src="https://s3-ap-southeast-2.amazonaws.com/cdn.appearition.com/sdk/js/modules/authentication/v1.0.0/appearition.authentication.min.js"></script>
+  <script src="https://s3-ap-southeast-2.amazonaws.com/cdn.appearition.com/sdk/js/modules/arTargetImageAndMedia/v1.0.0/appearition.arTargetImageAndMedia.min.js"></script>
 
-</body>
-<script src="extensions.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-<script src="https://s3-ap-southeast-2.amazonaws.com/cdn.appearition.com/sdk/js/core/v1.0.0/appearition.min.js"></script>
-<script src="https://s3-ap-southeast-2.amazonaws.com/cdn.appearition.com/sdk/js/modules/authentication/v1.0.0/appearition.authentication.min.js"></script>
-<script src="https://s3-ap-southeast-2.amazonaws.com/cdn.appearition.com/sdk/js/modules/arTargetImageAndMedia/v1.0.0/appearition.arTargetImageAndMedia.min.js"></script>
-
-<script type="text/javascript">
-
+  <script type="text/javascript">
     // Appearition Platform Account Details
-    var apiUrl = '';        // Your API URL;
-    var apiToken = '';      // Your API Token;
-    var myChannelId = 0;    // Your channel ID;
+    var apiUrl = ''; // Your API URL;
+    var apiToken = ''; // Your API Token;
+    var myChannelId = 0; // Your channel ID;
 
     // consts
-    const UriDataReader = "UriDataReader";
-    const MSSQLServer = "MSSQLServer";
+    const UriDataReader = 'UriDataReader';
+    const MSSQLServer = 'MSSQLServer';
 
     // Variables
     var arTargets;
@@ -161,615 +254,634 @@
     var pnlDataTransformTemplateSamples;
     var btnSaveArRecord;
     var btnCreateArRecord;
-    var lblAssetId;    
+    var lblAssetId;
     var lblArMediaId;
     var screenBlocker;
-    var screenBlockerMessageText;    
+    var screenBlockerMessageText;
     var btnTestQuery;
     var pnlTestResults;
     var pnlTestQueryOutput;
     var btnUseExample;
 
     $(document).ready(function () {
+      if (apiUrl == '' || apiToken == '') {
+        printError(
+          "You have not supplied an API Url and/or API Token. <a href='http://docs.appearition.com/start/developer/register/' target='_blank'>learn more</a>"
+        );
+        return;
+      }
 
-        if(apiUrl == '' || apiToken == ''){
-            printError("You have not supplied an API Url and/or API Token. <a href='http://docs.appearition.com/start/developer/register/' target='_blank'>learn more</a>");
-            return;
+      initUiControls();
+
+      printMessage('Verifying session to Appearition platform...');
+      Appearition.Authentication.VerifySession(
+        apiUrl,
+        apiToken,
+        myChannelId
+      ).then(
+        () => {
+          printMessage('Session has been verified');
+          getExistingArRecords();
+          getDataMediaTypes();
+        },
+        (error) => {
+          handleResponseErrors('Session cannot be verified');
+          handleResponseErrors(error);
         }
-
-        initUiControls();
-
-        printMessage("Verifying session to Appearition platform...");        
-        Appearition.Authentication.VerifySession(apiUrl, apiToken, myChannelId)
-                    .then(
-                        () =>{
-                            printMessage("Session has been verified");
-                            getExistingArRecords();
-                            getDataMediaTypes();
-                        },
-                        (error) =>{
-                            handleResponseErrors("Session cannot be verified");
-                            handleResponseErrors(error);
-                        }
-                    );
-        
+      );
     });
 
-    function initUiControls(){
-        lstArRecords = $("#lstArRecords");
-        pnlArRecord = $("#pnlArRecord");
-        pnlSelectArRecord = $("#pnlSelectArRecord");
+    function initUiControls() {
+      lstArRecords = $('#lstArRecords');
+      pnlArRecord = $('#pnlArRecord');
+      pnlSelectArRecord = $('#pnlSelectArRecord');
 
-        lblAssetId = $("#lblAssetId");
-        lblArMediaId = $("#lblArMediaId");
-        txtName = $("#txtName");
-        txtQueryText = $("#txtQueryText");
-        lstDataTransformProvider = $("#lstDataTransformProvider");
-        lstDataMediaType = $("#lstDataMediaType");
-        txtDataTransformTemplate = $("#txtDataTransformTemplate");  
-        pnlDataTransformTemplateSamples = $("#pnlDataTransformTemplateSamples");        
+      lblAssetId = $('#lblAssetId');
+      lblArMediaId = $('#lblArMediaId');
+      txtName = $('#txtName');
+      txtQueryText = $('#txtQueryText');
+      lstDataTransformProvider = $('#lstDataTransformProvider');
+      lstDataMediaType = $('#lstDataMediaType');
+      txtDataTransformTemplate = $('#txtDataTransformTemplate');
+      pnlDataTransformTemplateSamples = $('#pnlDataTransformTemplateSamples');
 
-        btnSaveArRecord = $("#btnSaveArRecord");
-        btnCreateArRecord = $("#btnCreateArRecord");
-        btnTestQuery = $("#btnTestQuery");
-        pnlTestResults = $("#pnlTestResults");
-        pnlTestQueryOutput = $("#pnlTestQueryOutput");
-        btnUseExample = $("#btnUseExample");
+      btnSaveArRecord = $('#btnSaveArRecord');
+      btnCreateArRecord = $('#btnCreateArRecord');
+      btnTestQuery = $('#btnTestQuery');
+      pnlTestResults = $('#pnlTestResults');
+      pnlTestQueryOutput = $('#pnlTestQueryOutput');
+      btnUseExample = $('#btnUseExample');
 
-        screenBlocker = $("#screenBlocker");
-        screenBlockerMessageText = $("#screenBlockerMessageText");
+      screenBlocker = $('#screenBlocker');
+      screenBlockerMessageText = $('#screenBlockerMessageText');
     }
 
     // ----------------------------------------------------------------------
     // List existing AR records
 
-    function getExistingArRecords(){
-
-        Appearition.ArTargetImageAndMedia.List(
-            JSON.stringify({
-                Page: 0,
-                RecordsPerPage: 10,
-                IncludeTargetImages: true,
-                IncludeMedia: true
-            }),
-            {
-                channelId: myChannelId,
-                beforeSend: function (request) {
-                    printMessage("Calling ArTarget/List API...");
-                },
-                complete: function () {
-                    printMessage("Call to ArTarget/List API completed");
-                },
-                success: function (data) {
-                    arTargets = data.ArTargets;
-                    loadArTargets();
-                },
-                error: function (errorArr, xhr) {                    
-                    handleResponseErrors(errorArr, xhr);
-                    $('#arExperiences').innerHTML = 'Loading failed';
-                }
-            }
-        );
+    function getExistingArRecords() {
+      Appearition.ArTargetImageAndMedia.List(
+        JSON.stringify({
+          Page: 0,
+          RecordsPerPage: 10,
+          IncludeTargetImages: true,
+          IncludeMedia: true,
+        }),
+        {
+          channelId: myChannelId,
+          beforeSend: function (request) {
+            printMessage('Calling ArTarget/List API...');
+          },
+          complete: function () {
+            printMessage('Call to ArTarget/List API completed');
+          },
+          success: function (data) {
+            arTargets = data.ArTargets;
+            loadArTargets();
+          },
+          error: function (errorArr, xhr) {
+            handleResponseErrors(errorArr, xhr);
+            $('#arExperiences').innerHTML = 'Loading failed';
+          },
+        }
+      );
     }
 
-    function loadArTargets(){
+    function loadArTargets() {
+      lstArRecords.html('');
+      lstArRecords.append(
+        "<option value=''>Choose existing AR record...</option>"
+      );
 
-        lstArRecords.html("");
-        lstArRecords.append("<option value=''>Choose existing AR record...</option>");
-
-        arTargets.foreach(arTarget => {
-
-            // we are only interested in AR records create with a URL data source
-            var dataMedia = arTarget.mediaFiles.firstOrDefault(media => {                
-                return media.isDataQuery;
-            });
-            if(dataMedia == null) return;
-
-            lstArRecords.append("<option value='" + arTarget.arTargetId + "'>" + arTarget.name + "</option>");
+      arTargets.foreach((arTarget) => {
+        // we are only interested in AR records create with a URL data source
+        var dataMedia = arTarget.mediaFiles.firstOrDefault((media) => {
+          return media.isDataQuery;
         });
+        if (dataMedia == null) return;
 
+        lstArRecords.append(
+          "<option value='" +
+            arTarget.arTargetId +
+            "'>" +
+            arTarget.name +
+            '</option>'
+        );
+      });
     }
 
-    function onSelectArRecord(){
-        var arTargetId = lstArRecords.val();
-        pnlSelectArRecord.hide();
-        pnlArRecord.show();
-        reloadArTarget(arTargetId);
+    function onSelectArRecord() {
+      var arTargetId = lstArRecords.val();
+      pnlSelectArRecord.hide();
+      pnlArRecord.show();
+      reloadArTarget(arTargetId);
     }
 
     // ----------------------------------------------------------------------
     // Save AR
 
-    function onSaveArRecord(){
-        if(selectedArTarget == null){
-            doCreateArTarget();
-            return;
+    function onSaveArRecord() {
+      if (selectedArTarget == null) {
+        doCreateArTarget();
+        return;
+      }
+
+      doSaveArTarget();
+    }
+
+    function doSaveArTarget() {
+      if (selectedArTarget.name != txtName.val()) {
+        printMessage('Updating Name by calling ArTarget/UpdateName');
+        updateName();
+      } else {
+        printMessage('Name has not changed');
+      }
+
+      // we only want to update the media record which has the URL data source
+      updateMedia(selectedMedia);
+    }
+
+    function updateName() {
+      selectedArTarget.name = txtName.val();
+
+      Appearition.ArTargetImageAndMedia.UpdateName(
+        selectedArTarget.arTargetId,
+        JSON.stringify({ name: selectedArTarget.name }),
+        {
+          beforeSend: function () {
+            showScreenBlocker('Saving name...');
+          },
+          complete: function () {
+            hideScreenBlocker();
+          },
+          success: function (data) {
+            printMessage('Name saved');
+          },
+          error: function (errors) {
+            handleResponseErrors(errors);
+          },
         }
-
-        doSaveArTarget();
+      );
     }
 
-    function doSaveArTarget(){
+    function updateMedia(media) {
+      var requestData = {
+        arMediaId: media.arMediaId,
+        mediaType: lstDataMediaType.val(),
+        text: txtQueryText.val(),
+        isDataQuery: true,
+        dataTransform: {
+          ProviderName: lstDataTransformProvider.val(),
+          TemplateText: txtDataTransformTemplate.val(),
+        },
+      };
 
-        if(selectedArTarget.name != txtName.val()) {
-            printMessage("Updating Name by calling ArTarget/UpdateName")
-            updateName()
+      Appearition.ArTargetImageAndMedia.UpdateMediaSettings(
+        selectedArTarget.arTargetId,
+        media.arMediaId,
+        JSON.stringify(requestData),
+        {
+          beforeSend: function () {
+            printMessage('Saving media...');
+            showScreenBlocker('Saving media...');
+          },
+          complete: function () {
+            hideScreenBlocker();
+          },
+          success: function (data) {
+            printMessage('Media saved');
+            btnTestQuery.removeAttr('disabled');
+          },
+          error: function (errors) {
+            handleResponseErrors(errors);
+          },
         }
-        else{
-            printMessage("Name has not changed")
-        }
-
-        // we only want to update the media record which has the URL data source
-        updateMedia(selectedMedia);
+      );
     }
 
-    function updateName(){
-        
-        selectedArTarget.name = txtName.val();
+    function onCancel() {
+      selectedArTarget = null;
+      selectedMedia = null;
+      lblAssetId.text('');
+      lblArMediaId.text('');
+      txtQueryText.val(null);
+      txtDataTransformTemplate.val(null);
+      lstDataTransformProvider.val(null);
+      btnTestQuery.hide();
+      pnlTestQueryOutput.html(null);
 
-        Appearition.ArTargetImageAndMedia.UpdateName(
-            selectedArTarget.arTargetId,
-            JSON.stringify({ name: selectedArTarget.name }),
-            {
-                beforeSend: function(){
-                    showScreenBlocker("Saving name...")
-                },
-                complete: function(){
-                    hideScreenBlocker();
-                },
-                success: function(data) {
-                    printMessage("Name saved")
-                },
-                error: function(errors) {
-                    handleResponseErrors(errors)
-                }
-
-            }
-        );
-    }
-
-    function updateMedia(media){
-
-        var requestData = {
-            arMediaId: media.arMediaId,
-            mediaType: lstDataMediaType.val(),
-            text: txtQueryText.val(),
-            isDataQuery: true,
-            dataTransform: {
-                ProviderName: lstDataTransformProvider.val(),
-                TemplateText: txtDataTransformTemplate.val()
-            }
-        };
-
-        Appearition.ArTargetImageAndMedia.UpdateMediaSettings(
-            selectedArTarget.arTargetId,
-            media.arMediaId,
-            JSON.stringify(requestData),
-            {
-                beforeSend: function(){
-                    printMessage("Saving media...")
-                    showScreenBlocker("Saving media...")
-                },
-                complete: function(){
-                    hideScreenBlocker();
-                },
-                success: function(data) {
-                    printMessage("Media saved")
-                    btnTestQuery.removeAttr('disabled');
-                },
-                error: function(errors) {
-                    handleResponseErrors(errors)
-                }
-            });        
-    }
-
-    function onCancel(){
-        selectedArTarget = null;
-        selectedMedia = null;
-        lblAssetId.text("");
-        lblArMediaId.text("");
-        txtQueryText.val(null);
-        txtDataTransformTemplate.val(null);
-        lstDataTransformProvider.val(null);
-        btnTestQuery.hide();
-        pnlTestQueryOutput.html(null);
-
-        pnlArRecord.hide();
-        pnlSelectArRecord.show();
-        getExistingArRecords();
+      pnlArRecord.hide();
+      pnlSelectArRecord.show();
+      getExistingArRecords();
     }
 
     // ----------------------------------------------------------------------
     // Create AR record
 
-    function onCreateArRecord(){
-        selectedArTarget = null;
-        selectedMedia = null;
+    function onCreateArRecord() {
+      selectedArTarget = null;
+      selectedMedia = null;
 
-        lblAssetId.text('');
-        lblArMediaId.text('');
+      lblAssetId.text('');
+      lblArMediaId.text('');
 
-        txtName.val(null);
-        txtQueryText.val(null);
-        lstDataMediaType.val(null);
-        txtDataTransformTemplate.val(null);
-        lstDataTransformProvider.val(null);
+      txtName.val(null);
+      txtQueryText.val(null);
+      lstDataMediaType.val(null);
+      txtDataTransformTemplate.val(null);
+      lstDataTransformProvider.val(null);
 
-        btnTestQuery.hide();
-        pnlSelectArRecord.hide();
-        pnlArRecord.show();
+      btnTestQuery.hide();
+      pnlSelectArRecord.hide();
+      pnlArRecord.show();
     }
 
     function doCreateArTarget() {
+      if (txtName.val() == null || txtName.val().length == 0) {
+        printError('Please name your experience');
+        return;
+      }
 
-        if (txtName.val() == null || txtName.val().length == 0) {
-            printError("Please name your experience");
-            return;
-        }
+      if (txtQueryText.val() == null || txtQueryText.val().length == 0) {
+        printError('Please enter a url where data will be retrieved from');
+        return;
+      }
 
-        if (txtQueryText.val() == null || txtQueryText.val().length == 0) {
-            printError("Please enter a url where data will be retrieved from");
-            return;
-        }
+      var createRequest = {
+        productId: myChannelId,
+        name: txtName.val(),
+      };
 
-        var createRequest = {
-            productId: myChannelId,
-            name: txtName.val()
-        };
+      var postData = JSON.stringify(createRequest);
 
-        var postData = JSON.stringify(createRequest);
-
-        Appearition.ArTargetImageAndMedia.Create(
-            postData,
-            {
-                beforeSend: function () {
-                    printMessage('Creating now...');
-                },
-                success: function (data) {
-                    printMessage("AR record was created");
-                    printMessage("AR target key (asset id): " + data.assetId);
-                    selectedArTarget = data;        
-                    createMedia();            
-                },
-                error: function (errors) {
-                    handleResponseErrors(errors);
-                }
-            });
+      Appearition.ArTargetImageAndMedia.Create(postData, {
+        beforeSend: function () {
+          printMessage('Creating now...');
+        },
+        success: function (data) {
+          printMessage('AR record was created');
+          printMessage('AR target key (asset id): ' + data.assetId);
+          selectedArTarget = data;
+          createMedia();
+        },
+        error: function (errors) {
+          handleResponseErrors(errors);
+        },
+      });
     }
 
-    function createMedia(){
+    function createMedia() {
+      var requestData = {
+        mediaType: lstDataMediaType.val(),
+        text: txtQueryText.val(),
+        isDataQuery: true,
+        dataTransform: {
+          ProviderName: lstDataTransformProvider.val(),
+          TemplateText: txtDataTransformTemplate.val(),
+        },
+      };
 
-        var requestData = {
-            mediaType: lstDataMediaType.val(),
-            text: txtQueryText.val(),
-            isDataQuery: true,
-            dataTransform: {
-                ProviderName: lstDataTransformProvider.val(),
-                TemplateText: txtDataTransformTemplate.val()
-            }
-        };
-
-        Appearition.ArTargetImageAndMedia.CreateMedia(
-            selectedArTarget.arTargetId,
-            JSON.stringify(requestData),
-            {
-                beforeSend: function (request) {
-                    showScreenBlocker("Adding data media...")
-                    printMessage('Adding data media...');
-                },
-                complete: function(){
-                    hideScreenBlocker();
-                },
-                success: function (data) {
-                    printMessage('Data media added.');
-                    reloadArTarget(selectedArTarget.arTargetId);
-                },
-                error: function (errors) {
-                    handleResponseErrors(errors)
-                }
-            });
+      Appearition.ArTargetImageAndMedia.CreateMedia(
+        selectedArTarget.arTargetId,
+        JSON.stringify(requestData),
+        {
+          beforeSend: function (request) {
+            showScreenBlocker('Adding data media...');
+            printMessage('Adding data media...');
+          },
+          complete: function () {
+            hideScreenBlocker();
+          },
+          success: function (data) {
+            printMessage('Data media added.');
+            reloadArTarget(selectedArTarget.arTargetId);
+          },
+          error: function (errors) {
+            handleResponseErrors(errors);
+          },
+        }
+      );
     }
 
     // ----------------------------------------------------------------------
     // Load AR record
 
-    function reloadArTarget(arTargetId){
-
-        Appearition.ArTargetImageAndMedia.Get(
-            arTargetId,
-            {
-                beforeSend: function (request) {
-                    showScreenBlocker("Reloading AR record...")
-                    printMessage('Reloading AR record...');
-                },
-                complete: function(){
-                    hideScreenBlocker();
-                },
-                success: function (data) {
-                    printMessage('AR record retrieved.');
-                    selectedArTarget = data;
-                    editArRecord();
-                },
-                error: function (errors) {
-                    handleResponseErrors(errors);
-                }
-            });
+    function reloadArTarget(arTargetId) {
+      Appearition.ArTargetImageAndMedia.Get(arTargetId, {
+        beforeSend: function (request) {
+          showScreenBlocker('Reloading AR record...');
+          printMessage('Reloading AR record...');
+        },
+        complete: function () {
+          hideScreenBlocker();
+        },
+        success: function (data) {
+          printMessage('AR record retrieved.');
+          selectedArTarget = data;
+          editArRecord();
+        },
+        error: function (errors) {
+          handleResponseErrors(errors);
+        },
+      });
     }
 
-    function editArRecord(){
-        lblAssetId.text(selectedArTarget.assetId);
-        txtName.val(selectedArTarget.name);
+    function editArRecord() {
+      lblAssetId.text(selectedArTarget.assetId);
+      txtName.val(selectedArTarget.name);
 
-        selectedMedia = selectedArTarget.mediaFiles.firstOrDefault(media => {
-            return media.isDataQuery;
-        });
+      selectedMedia = selectedArTarget.mediaFiles.firstOrDefault((media) => {
+        return media.isDataQuery;
+      });
 
-        if(selectedMedia == null){
-            printMessage('AR record does not have a data media type');
-            return;
-        }
+      if (selectedMedia == null) {
+        printMessage('AR record does not have a data media type');
+        return;
+      }
 
-        btnTestQuery.show();
-        lblArMediaId.text(selectedMedia.arMediaId);
-        lstDataMediaType.val(selectedMedia.mediaType);
-        txtQueryText.val(selectedMedia.text);
-        txtDataTransformTemplate.hide();
-        if(selectedMedia.dataTransform != null) {            
-            lstDataTransformProvider.val(selectedMedia.dataTransform.ProviderName);
-            txtDataTransformTemplate.val(selectedMedia.dataTransform.TemplateText);
-            onDataTransformTypeChanged();
-            btnTestQuery.removeAttr('disabled');
-        }
+      btnTestQuery.show();
+      lblArMediaId.text(selectedMedia.arMediaId);
+      lstDataMediaType.val(selectedMedia.mediaType);
+      txtQueryText.val(selectedMedia.text);
+      txtDataTransformTemplate.hide();
+      if (selectedMedia.dataTransform != null) {
+        lstDataTransformProvider.val(selectedMedia.dataTransform.ProviderName);
+        txtDataTransformTemplate.val(selectedMedia.dataTransform.TemplateText);
+        onDataTransformTypeChanged();
+        btnTestQuery.removeAttr('disabled');
+      }
     }
 
     // ----------------------------------------------------------------------
-    // Media / Data 
+    // Media / Data
 
-    function getDataMediaTypes(){
+    function getDataMediaTypes() {
+      Appearition.ArTargetImageAndMedia.AvailableDataMediaTypes({
+        success: function (data) {
+          availableDataMediaTypes = data;
 
-        Appearition.ArTargetImageAndMedia.AvailableDataMediaTypes(
-            {
-                success: function (data) {
+          lstDataMediaType.append(
+            "<option value=''>Choose Data Source...</option>"
+          );
+          data.foreach((mediaType) => {
+            lstDataMediaType.append(
+              "<option value='" +
+                mediaType.Name +
+                "'>" +
+                mediaType.Name +
+                '</option>'
+            );
+          });
+        },
+        error: function (errors) {
+          handleResponseErrors(errors);
+        },
+      });
 
-                    availableDataMediaTypes = data;
+      Appearition.ArTargetImageAndMedia.AvailableDataTransformProviders({
+        success: function (data) {
+          availableDataTransformProviders = data;
 
-                    lstDataMediaType.append("<option value=''>Choose Data Source...</option>");
-                    data.foreach(mediaType => {
-                        lstDataMediaType.append("<option value='" + mediaType.Name + "'>" + mediaType.Name + "</option>");
-                    });
-
-                },
-                error: function (errors) {
-                    handleResponseErrors(errors);
-                }
-            });
-
-        Appearition.ArTargetImageAndMedia.AvailableDataTransformProviders(
-            {
-                success: function (data) {
-
-                    availableDataTransformProviders = data;
-
-                    lstDataTransformProvider.append("<option value=''>Choose Data Transform...</option>");
-                    data.foreach(transformProvider => {
-                        lstDataTransformProvider.append("<option value='" + transformProvider.name + "'>" + transformProvider.description + "</option>");
-                    });
-
-                },
-                error: function (errors) {
-                    handleResponseErrors(errors);
-                }
-            });        
+          lstDataTransformProvider.append(
+            "<option value=''>Choose Data Transform...</option>"
+          );
+          data.foreach((transformProvider) => {
+            lstDataTransformProvider.append(
+              "<option value='" +
+                transformProvider.name +
+                "'>" +
+                transformProvider.description +
+                '</option>'
+            );
+          });
+        },
+        error: function (errors) {
+          handleResponseErrors(errors);
+        },
+      });
     }
 
-    function onQueryTextChanged(){
-        btnTestQuery.attr('disabled', 'disabled');
+    function onQueryTextChanged() {
+      btnTestQuery.attr('disabled', 'disabled');
     }
 
-    function onDataMediaTypeChanged(){
+    function onDataMediaTypeChanged() {
+      btnUseExample.hide();
 
-        btnUseExample.hide();
+      var selectedMediaType = lstDataMediaType.val();
+      if (
+        selectedMediaType == UriDataReader ||
+        selectedMediaType == MSSQLServer
+      ) {
+        btnUseExample.show();
+      }
 
-        var selectedMediaType = lstDataMediaType.val();
-        if(selectedMediaType == UriDataReader || selectedMediaType == MSSQLServer){
-            btnUseExample.show();
+      txtQueryText.val(null);
+      lstDataTransformProvider.val(null);
+      txtDataTransformTemplate.val(null);
+      btnTestQuery.attr('disabled', 'disabled');
+
+      if (
+        selectedMedia != null &&
+        selectedMedia.mediaType == selectedMediaType
+      ) {
+        txtQueryText.val(selectedMedia.text);
+        if (selectedMedia.dataTransform != null) {
+          lstDataTransformProvider.val(
+            selectedMedia.dataTransform.ProviderName
+          );
+          txtDataTransformTemplate.val(
+            selectedMedia.dataTransform.TemplateText
+          );
+          btnTestQuery.removeAttr('disabled');
         }
-
-        txtQueryText.val(null);
-        lstDataTransformProvider.val(null);
-        txtDataTransformTemplate.val(null);
-        btnTestQuery.attr("disabled", "disabled");
-
-        if(selectedMedia != null && selectedMedia.mediaType == selectedMediaType){
-            txtQueryText.val(selectedMedia.text);
-            if(selectedMedia.dataTransform != null) {            
-                lstDataTransformProvider.val(selectedMedia.dataTransform.ProviderName);
-                txtDataTransformTemplate.val(selectedMedia.dataTransform.TemplateText);
-                btnTestQuery.removeAttr('disabled');
-            }
-        }
+      }
     }
 
-    function onDataTransformTypeChanged(){
+    function onDataTransformTypeChanged() {
+      pnlDataTransformTemplateSamples.html(null);
+      txtDataTransformTemplate.val(null);
+      btnTestQuery.attr('disabled', 'disabled');
 
-        pnlDataTransformTemplateSamples.html(null);
-        txtDataTransformTemplate.val(null);
-        btnTestQuery.attr('disabled', 'disabled');
+      var provider = lstDataTransformProvider.val();
+      if (provider == null || provider == '' || provider == 'NA') {
+        txtDataTransformTemplate.hide();
+        return;
+      }
 
-        var provider = lstDataTransformProvider.val();
-        if(provider == null || provider == "" || provider == "NA"){
-            txtDataTransformTemplate.hide();            
+      txtDataTransformTemplate.show();
+
+      var selectedDataTransformProvider =
+        availableDataTransformProviders.firstOrDefault((provider) => {
+          return provider.name == lstDataTransformProvider.val();
+        });
+
+      if (selectedDataTransformProvider == null) return;
+
+      if (selectedDataTransformProvider.templates != null) {
+        selectedDataTransformProvider.templates.foreach((template) => {
+          pnlDataTransformTemplateSamples.append(
+            '<a class="btn btn-default btn-sm" onclick="javascript: onTemplateSampleSelected(\'' +
+              template.name +
+              '\')">' +
+              template.name +
+              '</a>'
+          );
+        });
+      }
+
+      if (
+        selectedMedia.dataTransform != null &&
+        selectedMedia.dataTransform.ProviderName ==
+          selectedDataTransformProvider.name
+      ) {
+        txtDataTransformTemplate.val(selectedMedia.dataTransform.TemplateText);
+      }
+    }
+
+    function onMediaTransformTemplateChanged() {
+      btnTestQuery.attr('disabled', 'disabled');
+    }
+
+    function onTemplateSampleSelected(templateName) {
+      var selectedDataTransformProvider =
+        availableDataTransformProviders.firstOrDefault((provider) => {
+          return provider.name == lstDataTransformProvider.val();
+        });
+
+      if (
+        selectedDataTransformProvider == null ||
+        selectedDataTransformProvider.templates == null
+      )
+        return;
+
+      var selectedTemplate =
+        selectedDataTransformProvider.templates.firstOrDefault((template) => {
+          return template.name == templateName;
+        });
+
+      if (selectedTemplate == null) return;
+
+      txtDataTransformTemplate.val(selectedTemplate.templateText);
+    }
+
+    function onTestQuery() {
+      pnlTestResults.modal('show');
+      pnlTestQueryOutput.html('starting...');
+
+      var dataRequest = Appearition.ArTargetImageAndMedia.DataByKeyRequest;
+      dataRequest.arTargetKey = selectedArTarget.assetId;
+      dataRequest.arMediaId = selectedMedia.arMediaId;
+
+      Appearition.ArTargetImageAndMedia.DataByKey(JSON.stringify(dataRequest), {
+        beforeSend: function (request) {
+          pnlTestQueryOutput.html('fetching...');
+          printMessage('fetching data...');
+        },
+        complete: function () {
+          printMessage('fetching data complete.');
+        },
+        success: function (data) {
+          if (data == null || data.length == 0) {
+            pnlTestQueryOutput.html('no data found');
             return;
-        }
+          }
 
-        txtDataTransformTemplate.show();
-
-        var selectedDataTransformProvider = availableDataTransformProviders.firstOrDefault(provider => {
-            return provider.name == lstDataTransformProvider.val();
-        });
-
-        if(selectedDataTransformProvider == null) return;
-
-        if(selectedDataTransformProvider.templates != null) {
-            selectedDataTransformProvider.templates.foreach(template =>{
-                pnlDataTransformTemplateSamples.append("<a class=\"btn btn-default btn-sm\" onclick=\"javascript: onTemplateSampleSelected('" + template.name + "')\">" + template.name + "</a>");
-            })
-        }
-
-        if(selectedMedia.dataTransform != null
-        && selectedMedia.dataTransform.ProviderName == selectedDataTransformProvider.name){
-            txtDataTransformTemplate.val(selectedMedia.dataTransform.TemplateText);
-        }
+          pnlTestQueryOutput.html(data);
+        },
+        error: function (errors) {
+          pnlTestQueryOutput.html(errors);
+          handleResponseErrors(errors);
+        },
+      });
     }
 
-    function onMediaTransformTemplateChanged(){
-        btnTestQuery.attr('disabled', 'disabled');
-    }
-
-    function onTemplateSampleSelected(templateName){
-
-        var selectedDataTransformProvider = availableDataTransformProviders.firstOrDefault(provider => {
-            return provider.name == lstDataTransformProvider.val();
-        });
-
-        if(selectedDataTransformProvider == null || selectedDataTransformProvider.templates == null) return;
-
-        var selectedTemplate = selectedDataTransformProvider.templates.firstOrDefault(template =>{
-            return template.name == templateName;
-        });
-
-        if(selectedTemplate == null) return;
-
-        txtDataTransformTemplate.val(selectedTemplate.templateText);
-    }
-
-    function onTestQuery(){
-        pnlTestResults.modal('show');
-        pnlTestQueryOutput.html("starting...");
-
-        var dataRequest = Appearition.ArTargetImageAndMedia.DataByKeyRequest;
-        dataRequest.arTargetKey = selectedArTarget.assetId;
-        dataRequest.arMediaId = selectedMedia.arMediaId;
-
-        Appearition.ArTargetImageAndMedia.DataByKey(
-            JSON.stringify(dataRequest),
-            {
-                beforeSend: function (request) {
-                    pnlTestQueryOutput.html("fetching...");
-                    printMessage('fetching data...');
-                },
-                complete: function(){
-                    printMessage('fetching data complete.');
-                },
-                success: function (data) {
-
-                    if (data == null || data.length == 0) {
-                        pnlTestQueryOutput.html("no data found")
-                        return;
-                    }
-
-                    pnlTestQueryOutput.html(data);
-
-                },
-                error: function (errors) {
-                    pnlTestQueryOutput.html(errors);
-                    handleResponseErrors(errors);
-                }
-            }
-        );        
-
-    }
-
-    function onCloseTestQueryResults(){
-        pnlTestResults.modal('hide');
+    function onCloseTestQueryResults() {
+      pnlTestResults.modal('hide');
     }
 
     // ----------------------------------------------------------------------
     // Examples
 
-    function onUseExample(){
+    function onUseExample() {
+      var selectedMediaType = lstDataMediaType.val();
 
-        var selectedMediaType = lstDataMediaType.val();
+      if (selectedMediaType == UriDataReader) {
+        uriDataReaderExample();
+        return;
+      }
 
-        if(selectedMediaType == UriDataReader){
-            uriDataReaderExample();
-            return;
-        }
-
-        if(selectedMediaType == MSSQLServer){
-            msSqlServerExample();
-        }
+      if (selectedMediaType == MSSQLServer) {
+        msSqlServerExample();
+      }
     }
 
-    function uriDataReaderExample(){
-        txtQueryText.val("http://worldtimeapi.org/api/ip")
-        lstDataTransformProvider.val("JsonDataTransform")
-        txtDataTransformTemplate.val("datetime");
-        txtDataTransformTemplate.show();
+    function uriDataReaderExample() {
+      txtQueryText.val('http://worldtimeapi.org/api/ip');
+      lstDataTransformProvider.val('JsonDataTransform');
+      txtDataTransformTemplate.val('datetime');
+      txtDataTransformTemplate.show();
 
-        btnTestQuery.attr("disabled", "disabled");
+      btnTestQuery.attr('disabled', 'disabled');
     }
 
-    function msSqlServerExample(){
-        txtQueryText.val("connectionstring:Data Source=[your_database_server];Initial Catalog=[your_database_name];User ID=[you_user_id];Password=[your_password];|commandtimeout:20|query:select * from sometable [or any other valid TSQL syntax]|returntype:csv")
-        lstDataTransformProvider.val("CsvDataTransform")
-        txtDataTransformTemplate.val("Rows:1-1,Cols:0-0");
-        txtDataTransformTemplate.show();
+    function msSqlServerExample() {
+      txtQueryText.val(
+        'connectionstring:Data Source=[your_database_server];Initial Catalog=[your_database_name];User ID=[you_user_id];Password=[your_password];|commandtimeout:20|query:select * from sometable [or any other valid TSQL syntax]|returntype:csv'
+      );
+      lstDataTransformProvider.val('CsvDataTransform');
+      txtDataTransformTemplate.val('Rows:1-1,Cols:0-0');
+      txtDataTransformTemplate.show();
 
-        btnTestQuery.attr("disabled", "disabled");
+      btnTestQuery.attr('disabled', 'disabled');
     }
 
     // ----------------------------------------------------------------------
     // Error handling and output
 
     function printError(error) {
-        handleResponseErrors(error, null);
+      handleResponseErrors(error, null);
     }
 
     function handleResponseErrors(error, xhr) {
+      var msg = "<span class='error'>";
 
-        var msg = "<span class='error'>";
-
-        if (error != null) {
-            if(Array.isArray(error)) {
-                error.foreach(function (e) {
-                    msg += e + "; ";
-                });
-            }
-            else{
-                msg += error;
-            }
+      if (error != null) {
+        if (Array.isArray(error)) {
+          error.foreach(function (e) {
+            msg += e + '; ';
+          });
+        } else {
+          msg += error;
         }
+      }
 
-        console.log(xhr);
-        if (xhr != null) {
-            msg = msg + "Status Code: " + xhr.status 
-            if(xhr.responseText)
-            {
-                msg += ", ResponseText: " + xhr.responseText + "; ";                
-            }
+      console.log(xhr);
+      if (xhr != null) {
+        msg = msg + 'Status Code: ' + xhr.status;
+        if (xhr.responseText) {
+          msg += ', ResponseText: ' + xhr.responseText + '; ';
         }
+      }
 
-        msg += "</span>"
+      msg += '</span>';
 
-        printMessage(msg);
+      printMessage(msg);
     }
 
     function printMessage(msg) {
-        $('#messages').append("<br/>");
-        $('#messages').append(msg);
+      $('#messages').append('<br/>');
+      $('#messages').append(msg);
     }
 
-    function showScreenBlocker(msg){
-        screenBlockerMessageText.html(msg);
-        screenBlocker.show();
+    function showScreenBlocker(msg) {
+      screenBlockerMessageText.html(msg);
+      screenBlocker.show();
     }
 
-    function hideScreenBlocker(){
-        screenBlocker.hide();
-        screenBlockerMessageText.html("");
+    function hideScreenBlocker() {
+      screenBlocker.hide();
+      screenBlockerMessageText.html('');
     }
-
-</script>
-
+  </script>
 </html>

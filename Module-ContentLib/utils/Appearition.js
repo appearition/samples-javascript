@@ -22,12 +22,13 @@ export const createItem = async (item) => {
   });
 
   const providerData = await provider.json();
-  providerName = providerData.Data[0].ProviderName;
 
-  if (providerName !== 'InternalContentLibrary') {
+  if (providerData.Data.length === 0) {
     throw new Error(
       'Please enable InternalContentLibrary provider in the tenant settings.'
     );
+  } else {
+    providerName = providerData.Data[0].ProviderName;
   }
 
   const addNewItemAPI = `${apiUrl}/ContentManager/AddNewItem/${channelId}?providerName=${providerName}`;
