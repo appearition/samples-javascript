@@ -1,0 +1,799 @@
+
+<html>
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+	<h1>Using Edge Services with AR records</h1>
+
+    <p>
+        This sample project will show you how to consume the <em>Content Edge Service</em> from an Edge Machine. In this sample, you will be retrieving
+        existing AR records from both the central Appearition Platform and the Edge Machine and see the load duration of each.
+        <br/><br/>
+        A few points about services on an edge machine:
+        <ol>
+            <li><em>Edge Services</em> are deployed on an <em>Edge Machine</em>. An <em>Edge Service</em> represents a specific type of workload that your client application needs.
+                For example, <em>Content</em> is a <em>service</em> that exposes RESTFUL api endpoints for retrieving content and data for a particular AR record.
+                Appearition has pre-created a number of <em>Edge Services</em> for you to use such as <em>Content</em>, <em>IOT streaming</em> and some AI. 
+                However, if your application requires any custom types of workloads, you can deploy and manage those on your Edge Machines <a href="http://docs.appearition.com/tutorials/developer/edge/services" target="_blank">(learn more)</a></li>
+            </li>
+            <li>Edge Machines must already be registered, pre-configured, launched and ready to serve for your tenant in your Appearition Platform account <a href="http://docs.appearition.com/tutorials/developer/edge/setup" target="_blank">(learn more)</a></li>
+            <li>To access an Edge Machine, you first need to make a call to the <strong><em>Broker</em></strong>. Its function is to identify 
+            the closest edge machine for your location, establish the connection to all of the services hosted on that Edge Machine and return the connection details <a href="http://docs.appearition.com/tutorials/developer/edge/broker" target="_blank">(learn more)</a></li>
+            </li>
+            <li>AR records must be <em>published</em> and synced to the Edge Machine. You will need to do this via the Appearition Platform management console <a href="http://docs.appearition.com/tutorials/developer/edge/publishing" target="_blank">(learn more)</a></li>
+            </li>
+            <li><em>Search/List AR records</em> is not available as a function on an Edge Service. In this demo, all available AR records in your tenant/channel are first loaded form
+                the central Appearition Platform. Once you select an AR record, the ID and KEY (aka assetId) can be used to retrieve content/data from the Edge Machine.
+            </li>
+        </ol>
+        
+    </p>
+    <hr/>
+    <div class="form-horizontal">
+        <div class="form-group">
+            <label class="col-sm-4 col-sm-4 control-label" for="lstArRecords">Select Existing AR records</label>
+            <div class="col-sm-8">
+                <select id="lstArRecords" class="form-control select-control" onchange="javascript: onSelectArRecord();"></select>
+            </div>
+        </div>
+    </div>
+    <hr/>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Source: Appearition Platform - Central
+                        <a class="btn btn-link btn-no-padding pull-right" onclick="javascript: clearMessages(SourceCentral);">clear</a>
+                    </div>
+                    <div class="panel-body panel-body-scroll" id="messagesCentral"></div>
+                </div>            
+            </div>
+            <div class="col-sm-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Source: Appearition Platform - Edge
+                        <a class="btn btn-link btn-no-padding pull-right" onclick="javascript: clearMessages(SourceEdge);">clear</a>
+                    </div>
+                    <div class="panel-body panel-body-scroll" id="messagesEdge"></div>
+                </div>            
+            </div>
+        </div>
+    </div>
+
+    <div id="screenBlocker" style="display: none;">
+        <div id="screenBlockerMessage">
+            <div class="container-fluid">
+                <div class="row blocker-header">
+                    <div class="col-sm-12 text-left">
+                        <p>Please wait</p>
+                    </div>
+                </div>
+                <div class="row blocker-body">
+                    <div class="col-sm-2">
+                        <span class="glyphicon glyphicon-time blocker-icon"></span>
+                    </div>
+                    <div class="col-sm-10">
+                        <div style="margin-top: 10px;" id="screenBlockerMessageText"><em>processing, please wait...</em></div>
+                    </div>
+                </div>
+                <div class="row blocker-footer">
+                    <div class="col-sm-12 text-right">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+<script src="extensions.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="https://s3-ap-southeast-2.amazonaws.com/cdn.appearition.com/sdk/js/core/v1.0.0/appearition.min.js"></script>
+<script src="https://s3-ap-southeast-2.amazonaws.com/cdn.appearition.com/sdk/js/modules/authentication/v1.0.0/appearition.authentication.min.js"></script>
+<script src="https://s3-ap-southeast-2.amazonaws.com/cdn.appearition.com/sdk/js/modules/arTargetImageAndMedia/v1.0.0/appearition.arTargetImageAndMedia.min.js"></script>
+<script src="https://s3-ap-southeast-2.amazonaws.com/cdn.appearition.com/sdk/js/modules/contentLibrary/v1.0.0/appearition.contentLibrary.min.js"></script>
+
+<script type="text/javascript">
+
+    // Appearition Platform Account Details
+    var apiUrl = '';         // Your API URL;
+    var apiToken = '';       // Your API Token;
+    var myChannelId = 0;     // Your channel ID;
+    var brokerUrl = '';      // Your broker URL;
+    var edgeMachineType = '' // Your edge machine type
+    var tenantKey = ''       // Your Tenant Key
+
+    // consts
+    const SourceCentral = 'Central';
+    const SourceEdge = 'Edge';
+
+    // Variables
+    var arTargets;
+
+    // Controls
+    var lstArRecords;
+    var screenBlocker;
+    var screenBlockerMessageText;    
+
+    $(document).ready(function () {
+
+        if(apiUrl == '' || apiToken == ''){
+            printError("You have not supplied an API Url and/or API Token. <a href='http://docs.appearition.com/start/developer/register/' target='_blank'>learn more</a>");
+            return;
+        }
+
+        initUiControls();
+
+        printMessage("Verifying session to Appearition platform...", SourceCentral);
+        var start = new Date();
+        Appearition.Authentication.VerifySession(apiUrl, apiToken, myChannelId)
+                    .then(
+                        () =>{
+                            printMessage("Session has been verified", SourceCentral, getDurationFromNow(start));
+                            getExistingArRecords();
+                            getConnectionFromBroker();
+                        },
+                        (error) =>{
+                            printError("Session cannot be verified", SourceCentral, getDurationFromNow(start));
+                            handleResponseErrors(error);
+                        }
+                    );
+        
+    });
+
+    function initUiControls(){
+        lstArRecords = $("#lstArRecords");
+        
+        screenBlocker = $("#screenBlocker");
+        screenBlockerMessageText = $("#screenBlockerMessageText");
+    }
+
+    // ----------------------------------------------------------------------
+    // Program control
+
+    function getExistingArRecords(){
+
+        var start = new Date();
+        Appearition.ArTargetImageAndMedia.List(
+            JSON.stringify({
+                Page: 0,
+                RecordsPerPage: 10,
+                IncludeTargetImages: true,
+                IncludeMedia: true
+            }),
+            {
+                channelId: myChannelId,
+                beforeSend: function (request) {
+                    printMessage("List ArTarget - request", SourceCentral);
+                },
+                success: function (data) {
+                    printMessage("List ArTarget - response", SourceCentral, getDurationFromNow(start));
+                    arTargets = data.ArTargets;
+                    loadArTargets();
+                },
+                error: function (errorArr, xhr) {                    
+                    printMessage("List ArTarget - response", SourceCentral, getDurationFromNow(start));
+                    handleResponseErrors(errorArr, xhr, SourceCentral);
+                }
+            }
+        );
+    }
+
+    function loadArTargets(){
+
+        lstArRecords.html("");
+        lstArRecords.append("<option value=''>Choose existing AR record...</option>");
+
+        arTargets.foreach(arTarget => {
+            lstArRecords.append("<option value='" + arTarget.arTargetId + "'>" + arTarget.name + " (ID: " + arTarget.arTargetId + ", KEY: " + arTarget.assetId + ")" +  "</option>");
+        });
+
+    }
+
+    function onSelectArRecord(){
+
+        var arTargetId = lstArRecords.val();
+        if(arTargetId == null || arTargetId == '')  return;
+
+        var arTarget = arTargets.firstOrDefault(art => { return art.arTargetId == arTargetId});
+
+        if(arTarget == null){
+            printError("arTarget with id " + arTargetId + " not found. Refresh screen and try again");
+            return;
+        }
+        if(arTarget.properties == null || arTarget.properties.length == 0){
+            getArTargetProperties(arTarget, (updatedArTarget) =>{
+                loadArTarget(updatedArTarget);
+                loadArTargetFromEdge(updatedArTarget);
+            });
+
+            return;
+        }
+       
+        loadArTarget(arTarget);
+        loadArTargetFromEdge(arTarget);
+    }
+
+    function getArTargetProperties(arTarget, callback){
+
+        var start = new Date();
+        Appearition.ArTargetImageAndMedia.GetProperties(
+            arTarget.arTargetId,
+            {                
+                beforeSend: function (request) {
+                    printMessage("Get ArTarget Properties - request", SourceCentral);
+                },
+                success: function (data) {
+                    printMessage("Get ArTarget Properties - response", SourceCentral, getDurationFromNow(start));
+
+                    arTarget.properties = data;
+
+                    if(callback != null && typeof callback == 'function'){
+                        callback(arTarget);
+                    }
+                },
+                error: function (errorArr, xhr) {                    
+                    printMessage("Get ArTarget Properties - response", SourceCentral, getDurationFromNow(start));
+                    handleResponseErrors(errorArr, xhr, SourceCentral);
+                }
+            }
+        );
+
+
+    }
+
+    // ----------------------------------------------------------------------
+    // Source - Central 
+
+    function loadArTarget(arTarget){
+
+        var start = new Date();
+        Appearition.ArTargetImageAndMedia.Get(
+            arTarget.arTargetId,
+            {
+                beforeSend: function (request) {
+                    printMessage('Get AR record - request', SourceCentral);
+                },
+                success: function (data) {
+                    printMessage('Get AR record - response', SourceCentral, getDurationFromNow(start));                    
+                    showArRecord(data, SourceCentral);
+                },
+                error: function (errors, xhr) {
+                    printMessage('Get AR record - response', SourceCentral, getDurationFromNow(start));                    
+                    handleResponseErrors(errors, xhr, SourceCentral);
+                }
+            });
+    }
+
+    function showArRecord(arTarget, source){
+
+        printMessage('Target Images: ' + arTarget.targetImages.length, source);
+        arTarget.targetImages.foreach(targetImage => {
+            printMessage('Target Image ' + targetImage.arImageId, source);
+            getTargetImage(arTarget, targetImage, source, (targetImage, imgSrc)=>{
+                // do nothing for the now
+            });
+        });
+
+        printMessage('media: ' + arTarget.mediaFiles.length, source);
+        arTarget.mediaFiles.foreach(media => {
+
+            if(media.isDataQuery){
+                printMessage('Media '+ media.arMediaId + ": data", source);
+                getData(arTarget, media, source);
+                return;
+            }
+
+            printMessage('Media ' + media.arMediaId + ": content", source);
+            getMedia(arTarget, media, source, (media, src)=>{
+                // do nothing for now
+            })
+        });        
+    }
+
+    function getItemFromLibrary(arTarget, msgPrefix, provider, itemKey, source, callback) {
+
+        var start = new Date();
+        var msg = msgPrefix + ": Get Content Item";
+        Appearition.ContentLibrary.GetItem(
+            provider,
+            itemKey,
+            {
+                beforeSend: function (request) {
+                    printMessage(msg + ' - request...', source);
+                },
+                complete: function (request) {
+                    printMessage(msg + ' - response', source, getDurationFromNow(start));
+                },
+                success: function (data) {
+                    if(callback != null && typeof callback == 'function') {
+                        callback(data);
+                    }
+                },
+                error: function (errors, xhr) {
+                    handleResponseErrors(errors, xhr, source);
+                }
+            });
+    }
+
+    function getMedia(arTarget, media, source, callback) {
+
+        // If the media has been added from the content library, then we need to go off and get
+        // the URL from there.
+        if(media.contentItemKey != null && media.contentItemKey.length > 0){
+            
+            // load target image from content library
+            getItemFromLibrary(
+                arTarget, 
+                "Media " + media.arMediaId,
+                media.contentItemProviderName, 
+                media.contentItemKey,
+                source,
+                (item)=>{
+                    if(!item.IsPrivate && item.Files != null && item.Files.length > 0 && item.Files[0].Url != null){
+                        if(callback != null && typeof callback == 'function') {
+                            callback(media, item.Files[0].Url);
+                        }
+                        return;
+                    }
+
+                    var src = Appearition.ContentLibrary.FileAsAuthorisedUrl(item.Files[0].Url);
+                    if(callback != null && typeof callback == 'function') {
+                        callback(media, src);
+                    }
+                });
+
+            return;
+        }
+
+        // otherwise, download it from the AR module itself
+        if(callback != null && typeof callback == 'function') {
+            callback(media, media.url);
+        }
+        
+    }
+
+    function getData(arTarget, media, source){
+
+        var dataRequest = {
+            arTargetKey: arTarget.assetId,
+            arMediaId: media.arMediaId,
+            params: [{
+                key: 'someKey',
+                value: 'someValue'
+            }]
+        }
+
+        var start = new Date();        
+        Appearition.ArTargetImageAndMedia.DataByKey(
+            JSON.stringify(dataRequest),
+            {
+                beforeSend: function (request) {
+                    printMessage('Get Data - request', source);
+                },
+                complete: function () {
+                    printMessage('Get Data - response', source, getDurationFromNow(start));
+                },
+                success: function (data) {
+                    printMessage("Data Result: " + data, source);
+                },
+                error: function (errors) {
+                    handleResponseErrors(errors, null, source);
+                }
+            }
+        );        
+
+    }
+
+    function getTargetImage(arTarget, targetImage, source, callback) {
+
+        // If the target image has been added from the content library, then we need to go off and get
+        // the image from there.
+        if(targetImage.contentItemKey != null && targetImage.contentItemKey.length > 0){
+            
+            // load target image from content library
+            getItemFromLibrary(
+                arTarget, 
+                "Target Image " + targetImage.arImageId,
+                targetImage.contentItemProviderName, 
+                targetImage.contentItemKey,
+                source,
+                (item)=>{
+
+                    if(!item.IsThumbnailPrivate && item.ThumbnailImage != null && item.ThumbnailImage.Url != null){
+                        if(callback != null && typeof callback == 'function') {
+                            callback(targetImage, item.ThumbnailImage.Url);
+                        }
+                        return;
+                    }
+
+                    var src = Appearition.ContentLibrary.FileAsAuthorisedUrl(item.ThumbnailImage.Url);
+                    if(callback != null && typeof callback == 'function') {
+                        callback(targetImage, src);
+                    }
+                });
+
+            return;
+        }
+
+        // otherwise, download it from the AR module itself
+        var start = new Date();
+        printMessage('Target Image ' + targetImage.arImageId + ' download request...', source);
+        Appearition.ArTargetImageAndMedia.DownloadTargetImageAsDataUrl(
+            targetImage.arImageId,
+            {
+                success: function (data) {
+                    printMessage('Target Image ' + targetImage.arImageId + ' download response', source, getDurationFromNow(start));
+                    if(callback != null && typeof callback === 'function') {
+                        callback(targetImage, data);
+                    }
+                },
+                error: function (error, xhr) {
+                    handleResponseErrors(error, xhr, source);
+                }
+            });
+    }    
+
+    // ----------------------------------------------------------------------
+    // Source - Edge
+
+    var edgeMachineConnectionDetails = null;
+    var contentEdgeService = null;
+
+    function getConnectionFromBroker(){
+        printMessage("Broker get connection to " + edgeMachineType + " - request", SourceEdge);
+
+        var url = brokerUrl + apiToken + '/' + tenantKey + '/' + myChannelId + '/' + edgeMachineType + '/connection';
+        var start = new Date();
+        $.get(url, 
+            data=> {
+                edgeMachineConnectionDetails = data;
+                showEdgeMachineConnectionDetails();
+            }
+        )
+        .fail(error => {
+            printError("Broker error - " + error.status + " " + error.statusText, SourceEdge);
+        })
+        .always(function() {
+            printMessage("Broker get connection to " + edgeMachineType + " - response", SourceEdge, getDurationFromNow(start));
+        });
+    }
+
+    function showEdgeMachineConnectionDetails(){
+        
+        printMessage("Broker returned the following edge machine connections...", SourceEdge)
+
+        edgeMachineConnectionDetails.foreach(cd =>{
+            printMessage("-------------------", SourceEdge)
+            printMessage("Service: " + cd.serviceDetails.name, SourceEdge)
+            printMessage("hostAddressDns: " + cd.serviceDetails.hostAddressDns, SourceEdge)
+            printMessage("port: " + cd.serviceDetails.port, SourceEdge)
+            printMessage("accessToken: " + cd.accessToken, SourceEdge)
+            printMessage("accessTokenExpiry: " + cd.accessTokenExpiry, SourceEdge)            
+        })
+
+        printMessage("-------------------", SourceEdge)
+    }
+
+    function loadArTargetFromEdge(arTarget){
+
+        if(edgeMachineConnectionDetails == null){
+            return;
+        }
+
+        contentEdgeService = edgeMachineConnectionDetails.firstOrDefault(cd =>{
+            return cd.serviceDetails.name == 'Content';
+        });
+
+        if(contentEdgeService == null){
+            printError("There is no 'Content' service on the edge machine", SourceEdge);
+            return;
+        }
+        
+        var isPublishedToEdgeProperty = arTarget.properties.firstOrDefault(p =>{ return p.propertyKey.toLowerCase() == "edgecompute.ispublished"; });
+        if(isPublishedToEdgeProperty == null 
+        || isPublishedToEdgeProperty.propertyValue == null 
+        || isPublishedToEdgeProperty.propertyValue.toLowerCase() !== 'true'){
+            printMessage("AR record with Id " + arTarget.arTargetId + " and Key " + arTarget.assetId + " has not been published to the Edge. You will need to do this via the Appearition Platform management console", SourceEdge);
+            return;
+        }
+
+        var url = contentEdgeService.serviceDetails.protocol + "://" 
+                + contentEdgeService.serviceDetails.hostAddressDns + ":" + contentEdgeService.serviceDetails.port 
+                + "/" + contentEdgeService.accessToken 
+                + '/' + myChannelId 
+                + '/ArTarget/' + arTarget.assetId;
+        
+        printMessage("Get AR record - request", SourceEdge);
+        var start = new Date();
+        $.get(url, 
+            data=> {
+                printMessage("Get AR record - response", SourceEdge, getDurationFromNow(start));
+                showArRecordFromEdge(data, SourceEdge);
+            }
+        )
+        .fail(error => {
+            printMessage("Get AR record - response", SourceEdge, getDurationFromNow(start));
+            printError("Get AR record - failed. " + error.status + " " + error.statusText, SourceEdge);
+        });
+    }
+
+    function showArRecordFromEdge(arTarget, source){
+
+        printMessage('Target Images: ' + arTarget.targetImages.length, source);
+        arTarget.targetImages.foreach(targetImage => {
+            printMessage('Target Image ' + targetImage.arImageId, source);
+            getTargetImageFromEdge(arTarget, targetImage, source, (targetImage, imgSrc)=>{
+                // do nothing for the now
+            });
+        });
+
+        printMessage('media: ' + arTarget.mediaFiles.length, source);
+        arTarget.mediaFiles.foreach(media => {
+
+            if(media.isDataQuery){
+                printMessage('Media '+ media.arMediaId + ": data", source);
+                getDataFromEdge(arTarget, media, source);
+                return;
+            }
+
+            printMessage('Media ' + media.arMediaId + ": content", source);
+            getMediaFromEdge(arTarget, media, source, (media, src)=>{
+                // do nothing for now
+            })
+        });        
+    }
+
+    function getItemFromLibraryFromEdge(arTarget, msgPrefix, provider, itemKey, source, callback) {
+       
+        var msg = msgPrefix + ": Get Content Item";
+
+        var url = contentEdgeService.serviceDetails.protocol + '://' 
+                + contentEdgeService.serviceDetails.hostAddressDns + ':' + contentEdgeService.serviceDetails.port 
+                + '/' + contentEdgeService.accessToken 
+                + '/ContentLibrary' 
+                + '/' + provider
+                + '/' + itemKey;
+
+        printMessage(msg + ' - request...', source);
+        var start = new Date();
+        $.get(url, 
+            data=> {
+                printMessage(msg + ' - response', source, getDurationFromNow(start));
+                if(callback != null && typeof callback === 'function') {
+                    callback(targetImage, data);
+                }
+            }
+        )
+        .fail(error => {
+            handleResponseErrors(msg + ' - response error - ' + error.responseText, null, source);
+        });
+    }
+
+    function getMediaFromEdge(arTarget, media, source, callback) {
+
+        // If the media has been added from the content library, then we need to go off and get
+        // the URL from there.
+        if(media.contentItemKey != null && media.contentItemKey.length > 0){
+            
+            // load target image from content library
+            getItemFromLibrary(
+                arTarget, 
+                "Media " + media.arMediaId,
+                media.contentItemProviderName, 
+                media.contentItemKey,
+                source,
+                (item)=>{
+                    if(!item.IsPrivate && item.Files != null && item.Files.length > 0 && item.Files[0].Url != null){
+                        if(callback != null && typeof callback == 'function') {
+                            callback(media, item.Files[0].Url);
+                        }
+                        return;
+                    }
+
+                    var src = Appearition.ContentLibrary.FileAsAuthorisedUrl(item.Files[0].Url);
+                    if(callback != null && typeof callback == 'function') {
+                        callback(media, src);
+                    }
+                });
+
+            return;
+        }
+
+        // otherwise, download it from the AR module itself
+        if(callback != null && typeof callback == 'function') {
+            callback(media, media.url);
+        }
+        
+    }
+
+    function getDataFromEdge(arTarget, media, source){
+
+        var dataRequest = {
+            params: [{
+                key: 'someKey',
+                value: 'someValue'
+            }]
+        }
+        
+        var url = contentEdgeService.serviceDetails.protocol + "://" 
+                + contentEdgeService.serviceDetails.hostAddressDns + ":" + contentEdgeService.serviceDetails.port 
+                + "/" + contentEdgeService.accessToken 
+                + '/' + myChannelId 
+                + '/ArTarget/' + arTarget.assetId
+                + '/data'
+                + '/' + media.arMediaId;
+                        
+        printMessage('Get Data - request', source);
+        var start = new Date();
+        $.ajax({
+            url: url, 
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(dataRequest),
+            success: data => {
+                printMessage('Get Data - response', source, getDurationFromNow(start));
+                printMessage("Data Result: " + data, source);
+            }
+        })
+        .fail(error => {
+            handleResponseErrors('Get Data - response error - ' + error.responseText, null, source);
+        });
+    }
+
+    function getTargetImageFromEdge(arTarget, targetImage, source, callback) {
+
+        // If the target image has been added from the content library, then we need to go off and get
+        // the image from there.
+        if(targetImage.contentItemKey != null && targetImage.contentItemKey.length > 0){
+
+            // load target image from content library
+            getItemFromLibraryFromEdge(
+                arTarget, 
+                "Target Image " + targetImage.arImageId,
+                targetImage.contentItemProviderName, 
+                targetImage.contentItemKey,
+                source,
+                (item)=>{
+
+                    if(!item.IsThumbnailPrivate && item.ThumbnailImage != null && item.ThumbnailImage.Url != null){
+                        if(callback != null && typeof callback == 'function') {
+                            callback(targetImage, item.ThumbnailImage.Url);
+                        }
+                        return;
+                    }
+
+                    var src = Appearition.ContentLibrary.FileAsAuthorisedUrl(item.ThumbnailImage.Url);
+                    if(callback != null && typeof callback == 'function') {
+                        callback(targetImage, src);
+                    }
+                });
+
+            return;
+        }
+
+        // otherwise, download it from the AR module itself
+        
+        var url = contentEdgeService.serviceDetails.protocol + "://" 
+                + contentEdgeService.serviceDetails.hostAddressDns + ":" + contentEdgeService.serviceDetails.port 
+                + "/" + contentEdgeService.accessToken 
+                + '/' + myChannelId 
+                + '/ArTarget/' + arTarget.assetId
+                + '/targetImage/' + targetImage.arImageId;
+
+        printMessage('Target Image ' + targetImage.arImageId + ' download request...', source);
+        var start = new Date();
+        $.get(url, 
+            data=> {
+                printMessage('Target Image ' + targetImage.arImageId + ' download response', source, getDurationFromNow(start));
+                if(callback != null && typeof callback === 'function') {
+                    callback(targetImage, data);
+                }
+            }
+        )
+        .fail(error => {
+            handleResponseErrors('Target Image ' + targetImage.arImageId + ' download response error - ' + error.responseText, null, source);
+        });
+
+    }    
+
+    // ----------------------------------------------------------------------
+    // Error handling and output
+
+    function getDurationFromNow(from){
+        var now = new Date();
+
+        var msecs = now.getTime() - from.getTime();
+        return msecs + " ms";
+    }
+
+    function printError(error, source) {
+        handleResponseErrors(error, null, source);
+    }
+
+    function handleResponseErrors(error, xhr, source) {
+
+        var msg = "<span class='error'>";
+
+        if (error != null) {
+            if(Array.isArray(error)) {
+                error.foreach(function (e) {
+                    msg += e + "; ";
+                });
+            }
+            else{
+                msg += error;
+            }
+        }
+
+        console.log(xhr);
+        if (xhr != null) {
+            msg = msg + "Status Code: " + xhr.status 
+            if(xhr.responseText)
+            {
+                msg += ", ResponseText: " + xhr.responseText + "; ";                
+            }
+        }
+
+        msg += "</span>"
+
+        printMessage(msg, source);
+    }
+
+    function printMessage(msg, source, duration) {
+
+        var currentdate = new Date(); 
+        var hours = currentdate.getHours()
+        if(hours < 10){
+            hours = "0" + hours;
+        }
+        var mins = currentdate.getMinutes()
+        if(mins < 10){
+            mins = "0" + mins;
+        }
+        var secs = currentdate.getSeconds()
+        if(secs < 10){
+            secs = "0" + secs;
+        }
+        var msecs = currentdate.getMilliseconds();
+        if(msecs < 10){
+            msecs = "00" + msecs; 
+        }
+        else if(msecs < 100){
+            msecs = "0" + msecs; 
+        }
+
+        if(source == null || source.length == 0){
+            source = SourceCentral;
+        }        
+
+        var msg = "<span class='print-time'>" + hours + ":" + mins + ":" + secs + ":" + msecs + ": </span>" + msg;
+        if(duration != null){
+            msg += " - <span class='print-duration'>" + duration + "</span>";
+        }
+        msg += "<br/>";
+
+        $('#messages' + source).append(msg);
+        $('#messages' + source).scrollTop($('#messages' + source)[0].scrollHeight);
+    }
+
+    function clearMessages(source){
+        $('#messages' + source).html("");
+    }
+
+    function showScreenBlocker(msg){
+        screenBlockerMessageText.html(msg);
+        screenBlocker.show();
+    }
+
+    function hideScreenBlocker(){
+        screenBlocker.hide();
+        screenBlockerMessageText.html("");
+    }
+
+</script>
+
+</html>
